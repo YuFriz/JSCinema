@@ -1,0 +1,854 @@
+body {
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #333;
+}
+
+
+
+
+
+
+/*STYLIZACJA OGOLNA*/
+
+main {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff; /* Białe tło dla głównej części */
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Dodanie cienia */
+}
+
+footer {
+    text-align: center;
+    padding: 1rem 0;
+    background: #333;
+    color: #fff;
+    margin-top: 40px; /* Większa przestrzeń między zawartością a stopką */
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-weight: bold;
+    color: #222;
+}
+p {
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+
+
+
+/*ABOUT*/
+
+
+.about-section table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    margin-bottom: 40px;
+}
+
+.about-section table td {
+    vertical-align: top;
+    padding: 20px;
+    border: none;
+    width: 50%;
+}
+
+.about-section table td img {
+    width: 100%; 
+    height: auto; 
+}
+
+.about-section table td p {
+    margin: 0;
+    text-align: justify;
+    line-height: 1.6;
+}
+
+
+
+/*BANNER*/
+
+.banner {
+    position: relative;
+    width: 100%;
+    max-width: 800px; /* Szerokość baneru */
+    height: 400px; /* Wysokość baneru */
+    margin: auto;
+    overflow: hidden; /* Ukrycie nadmiaru obrazów */
+}
+
+.banner img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    visibility: hidden;
+    transition: opacity 1s ease;
+}
+
+.banner img.active {
+    visibility: visible;
+    opacity: 1;
+}
+
+.banner img:not(.active) {
+    opacity: 0; /* Obraz chowa się */
+}
+
+
+
+/* PRZYCISKI WYBORU DATY */
+.date-btn {
+    background-color: #ff6b6b;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    margin: 5px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.date-btn:hover {
+    background-color: #ff3b3b;
+    transform: scale(1.05);
+}
+
+.date-btn.active {
+    background-color: #ff3b3b;
+    font-weight: bold;
+}
+
+/* FILMY - KARTY FILMÓW */
+.movies-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+.movie {
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 280px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.movie:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.movie img {
+    max-width: 100%;
+    border-radius: 5px;
+}
+
+
+
+
+/*FILMY_INDEX*/
+
+.movie-img {
+    width: 100%;             /* Obrazek wypełnia całą szerokość kontenera */
+    height: auto;            /* Zachowanie proporcji obrazu */
+    max-width: 200px;        /* Maksymalna szerokość obrazka */
+    max-height: 300px;       /* Maksymalna wysokość obrazka */
+    object-fit: cover;       /* Wyrównanie obrazu, aby dobrze wypełnił przestrzeń */
+    border-radius: 8px;      /* Zaokrąglenie rogów dla estetyki */
+}
+
+#already, #soon {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;              /* Odstęp pomiędzy obrazkami */
+    padding: 20px;
+    background-color: #f9f9f9; /* Tło sekcji */
+    border-radius: 8px;
+    margin-bottom: 30px;     /* Większa przestrzeń pomiędzy sekcjami */
+}
+
+#already ul, #soon ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+#already ul li, #soon ul li {
+    list-style: none;
+    text-align: center;
+    max-width: 150px;
+}
+
+#already ul li img, #soon ul li img {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#already ul li:hover, #soon ul li:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+
+#already ul li p, #soon ul li p {
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+
+/*SEARCH - INDEX*/
+
+.search-form {
+    display: flex;
+    border: 2px solid #fff;
+    border-radius: 25px;
+    overflow: hidden;
+}
+
+.search-form input {
+    padding: 10px;
+    border: none;
+    outline: none;
+}
+
+.search-form button {
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+.search-form button:hover {
+    background: #ff3b3b;
+}
+
+#search-results {
+    position: absolute;
+    top: 100%; /* Ustawienie listy tuż pod polem wyszukiwania */
+    left: 0;
+    width: 100%;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 1050; /* Zapewnia, że lista wyników jest nad innymi elementami */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.search-item {
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.search-item img {
+    width: 40px;
+    height: 40px;
+    border-radius: 5px;
+}
+
+.search-item:hover {
+    background-color: #f1f1f1;
+}
+
+
+
+
+
+/* PROFILE */
+
+.profile-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh; /* Zapobiega przesuwaniu karty */
+}
+
+.profile-card {
+    max-width: 500px;
+    width: 100%;
+    min-height: 350px; /* Stała wysokość karty */
+    position: relative;
+    background: white;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+}
+
+.profile-avatar-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background-color: #6c757d;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    font-weight: bold;
+    text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Styl dla inicjałów */
+.profile-avatar .initials {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: #6c757d;
+    color: white;
+    font-size: 40px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* Ukrycie tekstu, jeśli jest zdjęcie */
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Ukrycie tekstu, jeśli jest zdjęcie */
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.edit-icon {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 6px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    font-size: 14px;
+    border: 2px solid white;
+}
+
+
+
+.profile-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.profile-table td {
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+}
+
+.profile-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+.profile-button {
+    background-color: #333;
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.profile-button:hover {
+    background-color: #555;
+}
+
+
+/* REPEROIRES */
+.dates {
+    margin-bottom: 20px;
+}
+
+.date-btn {
+    padding: 10px 20px;
+    margin: 0 5px;
+    cursor: pointer;
+}
+
+#movies-list {
+    margin-top: 20px;
+}
+
+#movies-list div {
+    margin-bottom: 15px;
+}
+
+
+/* REPEROIRES */
+.dates {
+    margin-bottom: 20px;
+}
+
+.date-btn {
+    padding: 10px 20px;
+    margin: 0 5px;
+    cursor: pointer;
+}
+
+#movies-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+}
+
+#movies-list .movie-card {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.movie-thumbnail {
+    width: 180px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.movie-info {
+    flex: 2;
+    padding-left: 20px;
+}
+
+.movie-info h4 {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.movie-info p {
+    margin-bottom: 5px;
+    color: #666;
+}
+
+.movie-actions {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+
+
+
+.seating-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px auto;
+    max-width: 800px;
+}
+
+/* Każdy rząd siedzeń */
+.seat-row-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 5px;
+}
+
+/* Etykieta rzędu */
+.row-label {
+    font-weight: bold;
+    width: 70px;
+    text-align: right;
+    margin-right: 10px;
+}
+
+/* Kontener na siedzenia w jednym rzędzie */
+.seat-row {
+    display: flex;
+    gap: 5px;
+}
+
+/* Pojedyncze siedzenie */
+.seat {
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    line-height: 50px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* Siedzenia zajęte */
+.seat.taken {
+    background-color: #6c757d !important;
+    color: #fff;
+    pointer-events: none;
+}
+
+/* Ukryte puste miejsca */
+.empty-seat {
+    width: 50px;
+    height: 50px;
+    background: transparent;
+    visibility: hidden;
+}
+.seat.selected {
+    background-color: #28a745 !important; /* Zielony kolor dla wybranych miejsc */
+    color: white;
+}
+
+
+
+/*MOVIES*/
+
+.card img {
+    height: 300px;
+    object-fit: cover;
+}
+
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+
+.all-movies-btn {
+    background-color: #DA1E37; !important;/* Niebieski */
+    color: white;
+    border: none;
+}
+
+.showing-movies-btn {
+    background-color: #DA1E37; !important; /* Zielony */
+    color: white;
+    border: none;
+}
+
+.coming-soon-btn {
+    background-color: #DA1E37;!important; /* Żółty */
+    color: white;
+    border: none;
+}
+
+.genre-btn {
+    background-color: #DA1E37;!important; /* Fioletowy */
+    color: white;
+    border: none;
+}
+
+.all-movies-btn:hover,
+.showing-movies-btn:hover,
+.coming-soon-btn:hover,
+.genre-btn:hover {
+    opacity: 0.8;
+}
+
+
+
+
+
+/*ADD MOVIE*/
+
+.add-movie-card {
+    transition: none !important; /* Wyłącza wszelkie animacje */
+    transform: scale(1) !important; /* Zapobiega powiększaniu */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1) !important; /* Stała delikatna shadow */
+    will-change: auto; /* Zapobiega nieoczekiwanym zmianom */
+}
+
+/* Usunięcie efektu hover (bez zmiany cienia) */
+.add-movie-card:hover {
+    transform: scale(1) !important; /* Zapobiega efektowi powiększenia */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1) !important; /* Cień pozostaje taki sam */
+}
+
+
+
+/* AUDITORIUM */
+.card-auditorium-admin,
+.card-repertoires-admin {
+    transform: none !important;
+    transition: none !important;
+}
+
+
+.auditorium-btn {
+    width: 120px;
+    height: 45px;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+}
+
+.auditorium-btn.btn-success {
+    background-color: green;
+    color: white;
+    border: 2px solid darkgreen;
+}
+
+.auditorium-btn.btn-success:hover {
+    background-color: darkgreen;
+}
+
+.auditorium-btn.btn-danger {
+    background-color: red;
+    color: white;
+    border: 2px solid darkred;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.auditorium-btn.selected {
+    background-color: #0056b3;
+    color: white;
+    border: 2px solid #003d80;
+}
+
+
+/*REVIEW-VIEW*/
+
+.review-container {
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    background: #f9f9f9; /* Dodaj tło, aby było widoczne */
+}
+
+.stars {
+    color: gold;
+    font-size: 20px;
+}
+
+.back-link {
+    display: inline-block;
+    margin-top: 20px;
+    text-decoration: none;
+    background: #333;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px; /* Zaokrąglenie przycisku */
+}
+
+.back-link:hover {
+    background: #555;
+}
+
+.card-review {
+    transition: none !important;
+}
+
+
+
+/*REVIEWS*/
+
+.reviews-table {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.reviews-table th,
+.reviews-table td {
+    vertical-align: middle;
+}
+
+.reviews-table td {
+    padding: 12px 15px;
+}
+
+.reviews-table .btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.3s ease-in-out;
+}
+
+.reviews-table .btn:hover {
+    transform: scale(1.05);
+}
+
+.reviews-table .fa {
+    font-size: 14px;
+}
+
+
+.container-review {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+
+.table-responsive-review {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+
+/*SETTINGS-PROFILE-USER*/
+
+/* Custom styles for settings page */
+.settings-card {
+    max-width: 500px;
+    margin: auto;
+    padding: 20px;
+}
+
+.settings-card .form-control {
+    border-radius: 8px;
+}
+
+.settings-card button {
+    width: 100%;
+    padding: 10px;
+}
+
+.settings-card .btn-secondary {
+    margin-top: 10px;
+}
+
+
+
+
+
+
+
+/*---------------------------------------------------------------*/
+
+
+
+
+
+
+
+
+
+
+/* ADMIN - ADD_SCREENING */
+.time-buttons, .auditorium-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    padding: 10px 0;
+}
+
+.time-btn {
+    width: 80px;
+    height: 40px;
+    font-size: 14px;
+    font-weight: bold;
+    border: 2px solid #007bff;
+    background-color: white;
+    color: #007bff;
+    border-radius: 5px;
+    transition: all 0.2s ease-in-out;
+}
+
+.time-btn:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+.time-btn.selected {
+    background-color: #007bff;
+    color: white;
+    border: 2px solid #0056b3;
+}
+
+
+/*ADMIN - MOVIES*/
+
+/* Movie List Page Styles */
+.movie-img-admin {
+    width: 80px;
+    height: auto;
+}
+
+.video-link {
+    color: #3498db;
+    text-decoration: none;
+}
+
+.video-link:hover {
+    text-decoration: underline;
+}
+
+.btn-edit-m-adm, .btn-delete-m-adm {
+    margin-right: 5px;
+}
+
+.btn-delete-m-adm {
+    color: white;
+    background-color: red;
+
+}
+
+.btn-edit-m-adm {
+    color: white;
+    background-color: orange;
+}
+
+/* Add spacing around the "Add Movie" button */
+.btn-primary {
+    padding: 10px 15px;
+    font-size: 16px;
+}
+
