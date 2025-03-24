@@ -2,6 +2,7 @@
 if (isset($_GET['date'])) {
     $date = $_GET['date'];
     $genre = isset($_GET['genre']) && $_GET['genre'] !== '' ? $_GET['genre'] : null;
+    $movieId = isset($_GET['movie_id']) && $_GET['movie_id'] !== '' ? (int) $_GET['movie_id'] : null;
 
     $conn = new mysqli("localhost", "root", "", "cinemajs");
 
@@ -23,7 +24,7 @@ if (isset($_GET['date'])) {
         FROM movies m
         JOIN screenings s ON m.id = s.movie_id
         JOIN auditoriums a ON s.auditorium_id = a.id
-        JOIN movie_genres mg ON m.id = mg.movie_id
+        LEFT JOIN movie_genres mg ON m.id = mg.movie_id
         WHERE s.screening_date = ?";
 
     $params = [$date];
@@ -32,6 +33,12 @@ if (isset($_GET['date'])) {
     if (!empty($genre)) {
         $query .= " AND mg.genre_id = ?";
         $params[] = $genre;
+        $param_types .= "i";
+    }
+
+    if (!empty($movieId)) {
+        $query .= " AND m.id = ?";
+        $params[] = $movieId;
         $param_types .= "i";
     }
 
@@ -48,7 +55,8 @@ if (isset($_GET['date'])) {
 
     header('Content-Type: application/json');
     echo json_encode($movies);
-}
 
-$conn->close();
+    $stmt->close();
+    $conn->close();
+}
 ?>

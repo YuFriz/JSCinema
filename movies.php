@@ -52,7 +52,7 @@ if (!$result) {
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -62,6 +62,7 @@ if (!$result) {
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -102,87 +103,244 @@ if (!$result) {
 
 <!-- 🔹 Filtry -->
 <div class="container my-4">
-    <div class="row">
-        <div class="col-md-3">
-            <a href="movies.php" class="btn all-movies-btn w-100">All Movies</a>
+    <div class="row g-3">
+        <div class="col-6 col-md-3">
+            <a href="movies.php" class="btn btn-outline-dark w-100 d-flex align-items-center justify-content-center py-2 shadow-sm filter-btn">
+                <i class="bi bi-collection-play me-2"></i> All Movies
+            </a>
         </div>
-        <div class="col-md-3">
-            <a href="movies.php?status=showing" class="btn showing-movies-btn w-100">Currently Showing</a>
+        <div class="col-6 col-md-3">
+            <a href="movies.php?status=showing" class="btn btn-outline-dark w-100 d-flex align-items-center justify-content-center py-2 shadow-sm filter-btn">
+                <i class="bi bi-film me-2"></i> Now Showing
+            </a>
         </div>
-        <div class="col-md-3">
-            <a href="movies.php?status=soon" class="btn coming-soon-btn w-100">Coming Soon</a>
+        <div class="col-6 col-md-3">
+            <a href="movies.php?status=soon" class="btn btn-outline-dark w-100 d-flex align-items-center justify-content-center py-2 shadow-sm filter-btn">
+                <i class="bi bi-clock-history me-2"></i> Coming Soon
+            </a>
         </div>
-        <div class="col-md-3">
-            <button class="btn genre-btn w-100" id="genreButton">Choose Genre</button>
+        <div class="col-6 col-md-3">
+            <button class="btn btn-outline-dark w-100 d-flex align-items-center justify-content-center py-2 shadow-sm filter-btn" id="genreButton">
+                <i class="bi bi-tags me-2"></i> Filter
+            </button>
         </div>
     </div>
-</div>
 
 
-<!-- 🔹 Dropdown z gatunkami -->
-<div class="container my-3" id="genreTable" style="display: none;">
-    <h3 class="text-center">Choose Genre</h3>
-    <div class="row">
-        <?php
-        $genreSql = "SELECT * FROM genres";
-        $genreResult = $conn->query($genreSql);
 
-        if ($genreResult->num_rows > 0) {
-            while ($genre = $genreResult->fetch_assoc()) {
-                $genreName = htmlspecialchars($genre['name']);
-                echo "<div class='col-md-3'><a href='movies.php?genre=" . urlencode($genreName) . "' class='btn btn-outline-dark w-100 my-1'>$genreName</a></div>";
-            }
-        } else {
-            echo "<p class='text-center'>No genres found.</p>";
-        }
-        ?>
-    </div>
-</div>
+    <!-- 🔹 Panel filtrów -->
+    <div class="row mt-3" id="genreTable" style="display: none;">
+        <div class="col-md-8">
+            <div class="border rounded p-3 shadow-sm bg-light">
+                <h5>Genres</h5>
+                <div class="row">
+                    <?php
+                    $genreSql = "SELECT * FROM genres";
+                    $genreResult = $conn->query($genreSql);
 
-<!-- 🔹 Lista filmów -->
-<div class="container my-4">
-    <h2 class="text-center mb-4">Movies List</h2>
-    <div class="row">
-        <?php
-        if (!$result) {
-            die("<p class='text-danger text-center'>❌ Błąd zapytania SQL: " . $conn->error . "</p>");
-        }
-
-        if ($result->num_rows > 0) {
-            while ($movie = $result->fetch_assoc()) {
-                echo "
-        <div class='col-md-4 mb-4'>
-            <div class='card'>
-                <img src='{$movie['img1']}' class='card-img-top' alt='{$movie['name']}' style='height: 300px; object-fit: cover;'>
-                <div class='card-body text-center'>
-                    <h5 class='card-title'>{$movie['name']}</h5>
-                    <p class='text-muted'><strong>Genres:</strong> " . htmlspecialchars($movie['genres']) . "</p>
-                    <p><strong>Duration:</strong> {$movie['movie_duration']} min</p>
-                    <p><strong>Stars:</strong> " . str_repeat('⭐', max(0, (int) $movie['stars'])) . "</p>
-                    <a href='movie.php?id={$movie['id']}' class='btn btn-primary'>View Details</a>
+                    if ($genreResult->num_rows > 0) {
+                        while ($genre = $genreResult->fetch_assoc()) {
+                            $genreName = htmlspecialchars($genre['name']);
+                            $genreId = (int)$genre['id'];
+                            echo "
+                    <div class='col-md-4'>
+                        <div class='form-check'>
+                            <input class='form-check-input genre-checkbox' type='checkbox' value='$genreName' id='genre$genreId' name='genres[]'>
+                            <label class='form-check-label' for='genre$genreId'>$genreName</label>
+                        </div>
+                    </div>";
+                        }
+                    } else {
+                        echo "<p class='text-center'>No genres found.</p>";
+                    }
+                    ?>
                 </div>
             </div>
-        </div>";
-            }
-        } else {
-            echo "<p class='text-center text-danger'>⚠️ Brak filmów w bazie lub błąd zapytania.</p>";
-        }
+        </div>
 
-        ?>
+        <!-- Gwiazdki po prawej -->
+        <div class="col-md-4">
+            <div class="border rounded p-3 shadow-sm bg-light">
+                <h5>Filter by Stars</h5>
+                <div class="row">
+                    <?php for ($i = 1; $i <= 5; $i++): ?>
+                        <div class="col-12">
+                            <div class="form-check d-flex align-items-center">
+                                <input class="form-check-input star-checkbox me-2" type="checkbox" value="<?= $i ?>" id="star<?= $i ?>" name="stars[]">
+                                <label class="form-check-label" for="star<?= $i ?>"><?= str_repeat("⭐", $i) ?></label>
+                            </div>
+                        </div>
+                    <?php endfor; ?>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- 🔹 Przycisk Search -->
+        <div class="text-center my-3">
+            <button id="filterSearchBtn" class="btn btn-outline-dark d-flex align-items-center justify-content-center py-2 shadow-sm">
+                <i class="bi bi-search me-2"></i> Search
+            </button>
+        </div>
     </div>
-</div>
+
+
+
+    <!-- 🔹 Lista filmów -->
+    <div class="container my-4">
+        <h2 class="text-center mb-4">Movies List</h2>
+        <div class="row movies-list">
+            <?php
+            if (!$result) {
+                die("<p class='text-danger text-center'>❌ Błąd zapytania SQL: " . $conn->error . "</p>");
+            }
+
+            if ($result->num_rows > 0) {
+                while ($movie = $result->fetch_assoc()) {
+                    $comingSoonBadge = ($movie['status'] === 'soon in cinema') ? "<div class='coming-soon-banner'>Coming Soon</div>" : "";
+                    echo "
+            <div class='col-md-4 mb-4'>
+                <div class='card position-relative movie-card' onclick=\"window.location.href='movie.php?id={$movie['id']}'\">
+                    <img src='{$movie['img1']}' class='card-img-top' alt='{$movie['name']}' style='height: 300px; object-fit: cover;'>
+                    <div class='card-body text-center'>
+                        <h5 class='card-title'>{$movie['name']}</h5>
+                        <p class='text-muted'><strong>Genres:</strong> " . htmlspecialchars($movie['genres']) . "</p>
+                        <p><strong>Duration:</strong> {$movie['movie_duration']} min</p>
+                        <p><strong>Stars:</strong> " . str_repeat('⭐', max(0, (int) $movie['stars'])) . "</p>
+                    </div>
+                    $comingSoonBadge
+                </div>
+            </div>";
+                }
+            }
+            ?>
+        </div>
+    </div>
+
+
+
+
 
 
 <!-- 🔹 JavaScript do rozwijania gatunków -->
 <script>
     document.getElementById("genreButton").addEventListener("click", function () {
         const genreTable = document.getElementById("genreTable");
-        genreTable.style.display = genreTable.style.display === "none" ? "block" : "none";
+        genreTable.style.display = genreTable.style.display === "none" ? "flex" : "none";
     });
 </script>
 
+    <script>
+        function getCheckedValues(selector) {
+            return Array.from(document.querySelectorAll(selector + ':checked')).map(cb => cb.value);
+        }
 
-<!--SEARCH-->
+        function loadMovies() {
+            const selectedGenres = getCheckedValues('.genre-checkbox');
+            const selectedStars = getCheckedValues('.star-checkbox');
+
+            console.log("Genres selected:", selectedGenres);
+            console.log("Stars selected:", selectedStars);
+
+            $.ajax({
+                url: "filter_movies.php",
+                type: "POST",
+                data: {
+                    genres: JSON.stringify(selectedGenres),
+                    stars: JSON.stringify(selectedStars)
+                },
+                dataType: "json",
+                success: function (data) {
+                    console.log("Response from server:", data);
+
+                    let moviesContainer = $(".row");
+                    moviesContainer.empty();
+
+                    if (data.length > 0) {
+                        data.forEach(movie => {
+                            let starsDisplay = '⭐'.repeat(movie.stars);
+
+                            moviesContainer.append(`
+                        <div class='col-md-4 mb-4'>
+                            <div class='card movie-card position-relative' onclick="window.location.href='movie.php?id=${movie.id}'">
+                                <img src="${movie.img1}" class='card-img-top' alt="${movie.name}" style='height: 300px; object-fit: cover;'>
+                                <div class='card-body text-center'>
+                                    <h5 class='card-title'>${movie.name}</h5>
+                                    <p class='text-muted'><strong>Genres:</strong> ${movie.genres}</p>
+                                    <p><strong>Duration:</strong> ${movie.movie_duration} min</p>
+                                    <p><strong>Stars:</strong> ${starsDisplay}</p>
+                                </div>
+                                ${movie.status === 'soon in cinema' ? "<div class='coming-soon-banner'>Coming Soon</div>" : ""}
+                            </div>
+                        </div>
+                    `);
+                        });
+                    } else {
+                        moviesContainer.html("<p class='text-center text-danger'>⚠️ No movies found matching filters.</p>");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("AJAX error:", status, error);
+                }
+            });
+        }
+
+        // 🔹 Event listener dla przycisku "Search"
+        $(document).ready(function () {
+            $("#filterSearchBtn").on("click", function () {
+                const selectedGenres = $(".genre-checkbox:checked").map(function () { return this.value; }).get();
+                const selectedStars = $(".star-checkbox:checked").map(function () { return this.value; }).get();
+
+                $.ajax({
+                    url: "filter_movies.php",
+                    type: "POST",
+                    data: {
+                        genres: selectedGenres,
+                        stars: selectedStars
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        let moviesContainer = $(".row.movies-list");
+                        moviesContainer.empty();
+
+                        if (data.length > 0) {
+                            data.forEach(movie => {
+                                let starsDisplay = '⭐'.repeat(movie.stars);
+                                moviesContainer.append(`
+                            <div class='col-md-4 mb-4'>
+                                <div class='card movie-card position-relative' onclick="window.location.href='movie.php?id=${movie.id}'">
+                                    <img src="${movie.img1}" class='card-img-top' alt="${movie.name}" style='height: 300px; object-fit: cover;'>
+                                    <div class='card-body text-center'>
+                                        <h5 class='card-title'>${movie.name}</h5>
+                                        <p class='text-muted'><strong>Genres:</strong> ${movie.genres}</p>
+                                        <p><strong>Duration:</strong> ${movie.movie_duration} min</p>
+                                        <p><strong>Stars:</strong> ${starsDisplay}</p>
+                                    </div>
+                                    ${movie.status === 'soon in cinema' ? "<div class='coming-soon-banner'>Coming Soon</div>" : ""}
+                                </div>
+                            </div>
+                        `);
+                            });
+                        } else {
+                            moviesContainer.html("<p class='text-center text-danger'>⚠️ No movies found matching filters.</p>");
+                        }
+                    },
+                    error: function () {
+                        console.error("Error loading movies.");
+                    }
+                });
+            });
+        });
+
+
+    </script
+
+
+
+
+
+
+    <!--SEARCH-->
 <script>
     $(document).ready(function() {
         $("#myInput").on("input", function() {

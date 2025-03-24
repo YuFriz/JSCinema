@@ -102,7 +102,8 @@ while ($row = $imageResult->fetch_assoc()) {
                 <p><strong>Director:</strong> <?= htmlspecialchars($movie['author'] ?? 'Unknown') ?></p>
                 <p><strong>Plays:</strong> <?= htmlspecialchars($movie['plays'] ?? 'Unknown') ?></p>
             </div>
-            <button class="btn btn-primary w-100 mt-3 py-2 shadow">Choose a session</button>
+            <a href="repertoires.php?movie_id=<?= $movieId ?>" class="btn btn-primary w-100 mt-3 py-2 shadow">Choose a session</a>
+
 
         </div>
     </div>
@@ -112,12 +113,33 @@ while ($row = $imageResult->fetch_assoc()) {
                 <h4>Movie Images</h4>
                 <div class="d-flex flex-wrap">
                     <?php foreach ($movieImages as $image): ?>
-                        <img src="<?= htmlspecialchars($image) ?>" class="img-thumbnail m-2" style="width: 150px; height: auto;">
+                        <img src="<?= htmlspecialchars($image) ?>" class="img-thumbnail m-2 movie-image"
+                             style="width: 150px; height: auto; cursor: pointer;"
+                             data-bs-toggle="modal" data-bs-target="#imageModal"
+                             data-image="<?= htmlspecialchars($image) ?>">
                     <?php endforeach; ?>
+
                 </div>
             </div>
         </div>
     <?php endif; ?>
+
+    <!-- 🔹 Modal do powiększania zdjęć -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg"> <!-- Użycie modal-lg dla większego rozmiaru -->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Movie Image</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="modalImage" src="" class="img-fluid rounded shadow modal-img">
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 
     <div class="row mt-4">
         <div class="col-md-12 border rounded p-3 shadow-sm">
@@ -130,6 +152,17 @@ while ($row = $imageResult->fetch_assoc()) {
 
 </div>
 
+
+
+<!--POWIEKSZANIE ZDJECI -->
+<script>
+    document.querySelectorAll('.movie-image').forEach(img => {
+        img.addEventListener('click', function () {
+            let imageUrl = this.getAttribute('data-image');
+            document.getElementById('modalImage').setAttribute('src', imageUrl);
+        });
+    });
+</script>
 
 
 

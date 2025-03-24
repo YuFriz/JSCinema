@@ -105,6 +105,76 @@ p {
 
 
 
+/* MOVIES MOVIES*/
+
+.filter-btn {
+    transition: all 0.2s ease-in-out;
+    font-weight: 500;
+    border-radius: 12px;
+}
+
+.btn-outline-secondary.filter-btn:hover,
+.btn-outline-success.filter-btn:hover,
+.btn-outline-primary.filter-btn:hover,
+.btn-outline-dark.filter-btn:hover {
+    background-color: #DA1E37 !important;
+    color: white !important;
+    border-color: #DA1E37 !important;
+}
+
+
+.filter-btn i {
+    transition: color 0.2s ease-in-out;
+}
+
+.filter-btn:hover i {
+    color: white !important;
+}
+.coming-soon-banner {
+    background-color: #DA1E37; /* Czerwony pasek */
+    color: white;
+    text-align: center;
+    font-weight: bold;
+    padding: 8px 0;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    font-size: 16px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.movie-card {
+    position: relative;
+    overflow: hidden; /* Zapobiega nakładaniu się elementów */
+}
+
+.movie-card .card-body {
+    width: 100%;
+    padding-bottom: 40px; /* Zapewnia miejsce dla paska Coming Soon */
+}
+
+.movie-card .coming-soon-banner {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+}
+
+
+
+/*OKRESLONY MOVIE*/
+
+.modal-img {
+    max-width: 100%;
+    max-height: 100vh;
+    object-fit: contain;
+}
+
+
+
+
 /* PRZYCISKI WYBORU DATY */
 .date-btn {
     background-color: #ff6b6b;
@@ -562,38 +632,6 @@ p {
 .card:hover {
     transform: scale(1.05);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
-
-
-.all-movies-btn {
-    background-color: #DA1E37; !important;/* Niebieski */
-    color: white;
-    border: none;
-}
-
-.showing-movies-btn {
-    background-color: #DA1E37; !important; /* Zielony */
-    color: white;
-    border: none;
-}
-
-.coming-soon-btn {
-    background-color: #DA1E37;!important; /* Żółty */
-    color: white;
-    border: none;
-}
-
-.genre-btn {
-    background-color: #DA1E37;!important; /* Fioletowy */
-    color: white;
-    border: none;
-}
-
-.all-movies-btn:hover,
-.showing-movies-btn:hover,
-.coming-soon-btn:hover,
-.genre-btn:hover {
-    opacity: 0.8;
 }
 
 

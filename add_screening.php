@@ -34,7 +34,7 @@ if (isset($_GET['date'])) {
     }
 
     echo json_encode($movies);
-    exit; // Zakończ skrypt, aby nie generować dalszego HTML
+    exit; // Zakończ skrypt, aby nie generować dalszego HTMLadadada
 }
 
 // Sprawdzenie, czy to żądanie AJAX do pobrania audytoriów

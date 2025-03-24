@@ -90,20 +90,31 @@ require 'session_manager.php';
 
 
 <script>
+    function getMovieIdFromURL() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('movie_id');
+    }
+
     function loadMovies() {
         let selectedDate = document.querySelector('.date-btn.active')?.getAttribute('data-date') || document.querySelector('.date-btn')?.getAttribute('data-date');
         let selectedGenre = document.getElementById('genre').value;
+        let movieId = getMovieIdFromURL();
 
-        fetch(`get_movies.php?date=${selectedDate}&genre=${selectedGenre}`)
+        let url = `get_movies.php?date=${selectedDate}&genre=${selectedGenre}`;
+        if (movieId) {
+            url += `&movie_id=${movieId}`;
+        }
+
+        fetch(url)
             .then(response => response.json())
             .then(data => {
                 let moviesList = document.getElementById('movies-list');
-                moviesList.innerHTML = ''; // Wyczyść poprzednie wyniki!
+                moviesList.innerHTML = '';
 
                 if (data.length > 0) {
                     data.forEach(movie => {
                         let movieElement = document.createElement('div');
-                        movieElement.classList.add('col-md-12', 'mb-4'); // Film na całą szerokość
+                        movieElement.classList.add('col-md-12', 'mb-4');
 
                         movieElement.innerHTML = `
                         <div class="card p-2">
@@ -138,6 +149,7 @@ require 'session_manager.php';
             })
             .catch(error => console.error('Error:', error));
     }
+
 
     // Obsługa kliknięcia w datę
     document.querySelectorAll('.date-btn').forEach(button => {
