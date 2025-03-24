@@ -44,6 +44,28 @@ function get_sort_icon($column, $sort_column, $sort_order) {
     }
     return '';
 }
+
+
+// Aktualizacja statusów filmów na podstawie daty
+if (isset($_GET['action']) && $_GET['action'] === 'update_status') {
+    $today = date('Y-m-d');
+
+    $update_sql = "UPDATE movies 
+                   SET status = CASE 
+                       WHEN coming_date <= ? AND end_date >= ? THEN 'already showing'
+                       ELSE 'soon in cinema'
+                   END";
+
+    $stmt = $conn->prepare($update_sql);
+    $stmt->bind_param("ss", $today, $today);
+    $stmt->execute();
+    $stmt->close();
+
+    // Po aktualizacji - odświeżenie strony bez parametru akcji
+    header("Location: movie_admin.php?updated=1");
+    exit();
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -69,6 +91,7 @@ function get_sort_icon($column, $sort_column, $sort_order) {
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="text-center">Movie List</h2>
+        <a href="?action=update_status" class="btn btn-outline-success">Movie Aktualization</a>
         <a href="add_movie.php" class="btn btn-primary">Add New Movie</a>
     </div>
 

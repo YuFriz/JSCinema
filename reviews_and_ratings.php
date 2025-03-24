@@ -57,6 +57,7 @@ $stmt->close();
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
         <a class="navbar-brand" href="index.php">JSCinema</a>
+        <a href="profile.php" class="btn btn-outline-light">Back to Profile Panel</a>
     </div>
 </nav>
 
@@ -110,9 +111,6 @@ $stmt->close();
         <p class="text-muted text-center">No past screenings matching the selected filter.</p>
     <?php endif; ?>
 
-    <div class="text-center mt-3">
-        <a href="profile.php" class="btn btn-secondary"><i class="fa fa-home"></i> Back</a>
-    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

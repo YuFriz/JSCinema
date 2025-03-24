@@ -56,6 +56,7 @@ $conn->close();
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
         <a class="navbar-brand" href="index.php">JSCinema</a>
+        <a href="profile.php" class="btn btn-outline-light">Back to Profile Panel</a>
     </div>
 </nav>
 

@@ -78,11 +78,15 @@ $profileImage = !empty($user['profile_image']) ? "uploads/" . htmlspecialchars($
 
         <!-- 🔹 Dane użytkownika -->
         <h3 class="fw-bold mt-3"><?php echo htmlspecialchars($user['imie'] . " " . $user['nazwisko']); ?></h3>
+
+
         <?php if ($user['Status'] == 'user'): ?>
-        <p class="text-muted">JSCinema club member</p>
+            <p class="text-muted"><i class="fa-solid fa-star"></i> JSCinema club member</p>
+
 
         <?php else: ?>
-        <p class="text-muted">ADMIN</p>
+            <p class="text-muted"><i class="fa-solid fa-shield-halved"></i> ADMIN</p>
+
         <?php endif; ?>
 
 
@@ -90,15 +94,33 @@ $profileImage = !empty($user['profile_image']) ? "uploads/" . htmlspecialchars($
         <!-- 🔹 Przyciski użytkownika -->
         <div class="d-grid gap-3 col-md-8 mx-auto">
             <?php if ($user['Status'] == 'admin'): ?>
-                <a href="analysis.php" class="btn btn-secondary">Analysis</a>
-                <a href="movie_admin.php" class="btn btn-secondary">Movies</a>
-                <a href="auditorium_repertuar.php" class="btn btn-secondary">Auditorium & Repertuar</a>
-                <a href="reviews_and_ratings_admin.php" class="btn btn-secondary">Review</a>
-                <a href="users-admin.php" class="btn btn-secondary">Users</a>
+                <a href="analysis.php" class="btn btn-secondary">
+                    <i class="fa-solid fa-chart-line"></i> Analysis
+                </a>
+                <a href="movie_admin.php" class="btn btn-secondary">
+                    <i class="fa-solid fa-film"></i> Movies
+                </a>
+                <a href="auditorium_repertuar.php" class="btn btn-secondary">
+                    <i class="fa-solid fa-chair"></i> Auditorium & Repertuar
+                </a>
+                <a href="reviews_and_ratings_admin.php" class="btn btn-secondary">
+                    <i class="fa-solid fa-star-half-stroke"></i> Review
+                </a>
+                <a href="users-admin.php" class="btn btn-secondary">
+                    <i class="fa-solid fa-users"></i> Users
+                </a>
+
             <?php else: ?>
-                <a href="my_tickets.php" class="btn btn-primary">My Tickets</a>
-                <a href="reviews_and_ratings.php" class="btn btn-primary">Reviews and Ratings</a>
-                <a href="settings.php" class="btn btn-outline-dark">Settings</a>
+                <a href="my_tickets.php" class="btn btn-primary">
+                    <i class="fa-solid fa-ticket"></i> My Tickets
+                </a>
+                <a href="reviews_and_ratings.php" class="btn btn-primary">
+                    <i class="fa-solid fa-star-half-stroke"></i> Reviews and Ratings
+                </a>
+                <a href="settings.php" class="btn btn-outline-dark">
+                    <i class="fa-solid fa-gear"></i> Settings
+                </a>
+
             <?php endif; ?>
         </div>
 

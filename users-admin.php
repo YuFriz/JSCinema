@@ -77,8 +77,8 @@ $users_query = $conn->query("SELECT id, imie, nazwisko, email, Status FROM users
                         </span></td>
                     <td>
                         <div class="d-flex justify-content-center gap-2">
-                            <a href="edit_user.php?id=<?php echo $row['id']; ?>" class="btn btn-warning btn-sm">Edit</a>
-                            <a href="delete_user.php?id=<?php echo $row['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this user?');">Delete</a>
+                            <a href="edit_user_admin.php?id=<?php echo $row['id']; ?>" class="btn btn-warning btn-sm">Edit</a>
+                            <a href="delete_user_admin.php?id=<?php echo $row['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this user?');">Delete</a>
                         </div>
                     </td>
                 </tr>

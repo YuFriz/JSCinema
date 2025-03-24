@@ -54,6 +54,7 @@ $result = $conn->query($sql);
             <th>Movie</th>
             <th>Review</th>
             <th>Stars</th>
+            <th>Actions</th> <!-- NOWE -->
         </tr>
         </thead>
         <tbody>
@@ -68,6 +69,10 @@ $result = $conn->query($sql);
                         <?php for ($i = 0; $i < $row['star']; $i++): ?>
                             ⭐
                         <?php endfor; ?>
+                    </td>
+                    <td>
+                        <a href="edit_review_admin.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-warning">Edit</a>
+                        <a href="delete_review_admin.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this review?');">Delete</a>
                     </td>
                 </tr>
             <?php endwhile; ?>

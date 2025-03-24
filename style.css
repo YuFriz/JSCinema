@@ -777,6 +777,7 @@ p {
 .table-responsive-review {
     border-radius: 8px;
     overflow: hidden;
+    width: 1000px;
 }
 
 

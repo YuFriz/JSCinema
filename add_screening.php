@@ -16,15 +16,13 @@ if (!$user || $user['Status'] !== 'admin') {
 }
 $stmt->close();
 
-// Pobieranie dostępnych filmów przeniesiono do obsługi AJAX
+// AJAX: Pobieranie filmów ze statusem "already showing"
 if (isset($_GET['date'])) {
-    $date_filter = $_GET['date'];
     $movies_query = $conn->prepare("
         SELECT id, name FROM movies 
-        WHERE coming_date <= ? AND (end_date IS NULL OR end_date >= ?) 
+        WHERE status = 'already showing' 
         ORDER BY name ASC
     ");
-    $movies_query->bind_param("ss", $date_filter, $date_filter);
     $movies_query->execute();
     $movies_result = $movies_query->get_result();
 
@@ -34,10 +32,10 @@ if (isset($_GET['date'])) {
     }
 
     echo json_encode($movies);
-    exit; // Zakończ skrypt, aby nie generować dalszego HTMLadadada
+    exit;
 }
 
-// Sprawdzenie, czy to żądanie AJAX do pobrania audytoriów
+// AJAX: Pobieranie dostępnych audytoriów
 if (isset($_GET['movie_id'], $_GET['screening_date'], $_GET['start_time'])) {
     $movie_id = $_GET['movie_id'];
     $screening_date = $_GET['screening_date'];
@@ -59,22 +57,19 @@ if (isset($_GET['movie_id'], $_GET['screening_date'], $_GET['start_time'])) {
     }
 
     echo json_encode($auditoriums);
-    exit; // Koniec skryptu po zwróceniu JSON
+    exit;
 }
 
-// Pobranie dostępnych filmów w zależności od wybranej daty
-$date_filter = isset($_GET['date']) ? $_GET['date'] : date('Y-m-d');
+// Domyślne pobieranie filmów ze statusem "already showing"
 $movies_query = $conn->prepare("
     SELECT id, name FROM movies 
-    WHERE coming_date <= ? AND (end_date IS NULL OR end_date >= ?) 
+    WHERE status = 'already showing' 
     ORDER BY name ASC
 ");
-$movies_query->bind_param("ss", $date_filter, $date_filter);
 $movies_query->execute();
 $movies = $movies_query->get_result();
 
-
-// Obsługa formularza dodawania seansu
+// Obsługa formularza
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $movie_id = $_POST['movie_id'] ?? null;
     $screening_date = $_POST['screening_date'] ?? null;
@@ -84,7 +79,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (!$movie_id || !$screening_date || !$start_time || !$auditorium_id) {
         $message = "<div class='alert alert-danger'>Błąd: Wszystkie pola są wymagane!</div>";
     } else {
-        // Sprawdzenie czy sala jest już zajęta
         $sql_check = "SELECT id FROM screenings WHERE screening_date = ? AND start_time = ? AND auditorium_id = ?";
         $stmt = $conn->prepare($sql_check);
         $stmt->bind_param("ssi", $screening_date, $start_time, $auditorium_id);
@@ -94,7 +88,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         if ($stmt->num_rows > 0) {
             $message = "<div class='alert alert-warning'>Błąd: W tym audytorium o tej godzinie już odbywa się seans!</div>";
         } else {
-            // Dodanie nowego seansu
             $sql_insert = "INSERT INTO screenings (movie_id, screening_date, start_time, auditorium_id) VALUES (?, ?, ?, ?)";
             $stmt = $conn->prepare($sql_insert);
             $stmt->bind_param("issi", $movie_id, $screening_date, $start_time, $auditorium_id);
@@ -109,6 +102,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="pl">

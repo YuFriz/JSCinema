@@ -1,6 +1,6 @@
 <?php
 require 'db_connection.php';
-require 'session.php';
+require 'session_manager.php';
 
 
 // Sprawdzenie uprawnień administratora
