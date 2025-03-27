@@ -73,13 +73,16 @@ p {
 
 /* BANNER */
 
-.banner {
+.banner-container {
     position: relative;
-    width: 100%;
     max-width: 800px;
-    height: 400px;
     margin: auto;
     overflow: hidden;
+}
+
+.banner {
+    position: relative;
+    height: 400px;
 }
 
 .banner img {
@@ -90,6 +93,7 @@ p {
     height: 100%;
     object-fit: cover;
     visibility: hidden;
+    opacity: 0;
     transition: opacity 1s ease;
 }
 
@@ -98,9 +102,46 @@ p {
     opacity: 1;
 }
 
-.banner img:not(.active) {
-    opacity: 0;
+.banner-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 2rem;
+    background: rgba(0,0,0,0.3);
+    color: white;
+    border: none;
+    padding: 0 12px;
+    cursor: pointer;
+    z-index: 2;
 }
+
+.banner-btn.prev {
+    left: 0;
+}
+
+.banner-btn.next {
+    right: 0;
+}
+
+.dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+.dot {
+    height: 12px;
+    width: 12px;
+    background-color: #bbb;
+    border-radius: 50%;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.dot.active {
+    background-color: #333;
+}
+
 
 
 /*ADMIN BANNER*/

@@ -73,6 +73,8 @@ function fetchMovies($pdo, $status) {
         </div>
     </div>
 </nav>
+
+
 <div class="banner">
     <?php include 'banner.php'; ?>
 </div>
