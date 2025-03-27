@@ -71,16 +71,15 @@ p {
 }
 
 
-
-/*BANNER*/
+/* BANNER */
 
 .banner {
     position: relative;
     width: 100%;
-    max-width: 800px; /* Szerokość baneru */
-    height: 400px; /* Wysokość baneru */
+    max-width: 800px;
+    height: 400px;
     margin: auto;
-    overflow: hidden; /* Ukrycie nadmiaru obrazów */
+    overflow: hidden;
 }
 
 .banner img {
@@ -100,8 +99,39 @@ p {
 }
 
 .banner img:not(.active) {
-    opacity: 0; /* Obraz chowa się */
+    opacity: 0;
 }
+
+
+/*ADMIN BANNER*/
+
+.banner-preview {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-bottom: 1px solid #ddd;
+}
+
+.banner-card {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.banner-card .card-body {
+    padding: 12px;
+}
+
+.banner-card .btn {
+    width: 100px;
+}
+
+.status-badge {
+    font-size: 0.85rem;
+}
+
 
 
 

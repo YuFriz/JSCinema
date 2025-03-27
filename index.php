@@ -35,6 +35,7 @@ function fetchMovies($pdo, $status) {
     <title>JSCinema</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -58,19 +59,24 @@ function fetchMovies($pdo, $status) {
                 </li>
                 <li class="nav-item">
                     <?php if (isset($_SESSION['user_id'])): ?>
-                        <a class="nav-link" href="profile.php">Profile</a>
+                        <a class="nav-link d-flex align-items-center justify-content-center border rounded p-2 ms-2" href="profile.php" title="Profile" style="width: 42px; height: 42px;">
+                            <i class="bi bi-person-circle fs-4"></i>
+                        </a>
                     <?php else: ?>
-                        <a class="nav-link" href="register_login.php">Login/Register</a>
+                        <a class="nav-link d-flex align-items-center justify-content-center border rounded p-2 ms-2" href="register_login.php" title="Login/Register" style="width: 42px; height: 42px;">
+                            <i class="bi bi-box-arrow-in-right fs-4"></i>
+                        </a>
                     <?php endif; ?>
                 </li>
+
             </ul>
         </div>
     </div>
 </nav>
 <div class="banner">
-    <?php include 'get_banners.php'; ?>
+    <?php include 'banner.php'; ?>
 </div>
-<script src="banner.js"></script>
+
 <main>
     <?php foreach (["already showing" => "Already Showing", "soon in cinema" => "Soon in Cinema"] as $status => $title): ?>
         <section id="<?php echo str_replace(' ', '_', strtolower($status)); ?>">

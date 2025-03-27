@@ -91,7 +91,7 @@ while ($row = $imageResult->fetch_assoc()) {
     <div class="row mt-4">
         <div class="col-md-8">
             <video class="w-100 border rounded shadow" controls>
-                <source src="Movies/<?= htmlspecialchars($movie['id']) ?>/vid.mp4" type="video/mp4">
+                <source src="Movies/<?= htmlspecialchars($movie['id']) ?>/<?= htmlspecialchars($movie['id']) ?>_video.mp4" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
         </div>
