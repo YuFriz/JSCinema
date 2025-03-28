@@ -27,7 +27,7 @@ if (isset($_POST['register'])) {
     $result_check = $conn->query($sql_check);
 
     if ($result_check->num_rows > 0) {
-        $message = "E-mail jest już używany.";
+        $message = "E-mail is already in use.";
     } else {
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
         $sql = "INSERT INTO users (email, imie, nazwisko, password, data_urodzenia, status, created_at) 
@@ -38,7 +38,7 @@ if (isset($_POST['register'])) {
             header("Location: $redirect_url");
             exit();
         } else {
-            $message = "Błąd rejestracji: " . $conn->error;
+            $message = "Registration error: " . $conn->error;
         }
     }
 }
@@ -57,10 +57,10 @@ if (isset($_POST['login'])) {
             header("Location: $redirect_url");
             exit();
         } else {
-            $message = "Błędne hasło.";
+            $message = "Wrong password.";
         }
     } else {
-        $message = "Użytkownik nie istnieje.";
+        $message = "User doesn't exist.";
     }
 }
 
@@ -68,7 +68,7 @@ $conn->close();
 ?>
 
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -97,26 +97,26 @@ $conn->close();
             <!-- 🔹 Karta rejestracji -->
             <div class="card shadow">
                 <div class="card-header bg-primary text-white text-center">
-                    <h4>Rejestracja</h4>
+                    <h4>Register</h4>
                 </div>
                 <div class="card-body">
                     <form method="POST" action="register_login.php">
                         <label for="email">E-mail:</label>
                         <input type="email" id="email" name="email" class="form-control mb-3" required>
 
-                        <label for="imie">Imię:</label>
+                        <label for="imie">Name:</label>
                         <input type="text" id="imie" name="imie" class="form-control mb-3" required>
 
-                        <label for="nazwisko">Nazwisko:</label>
+                        <label for="nazwisko">Surname:</label>
                         <input type="text" id="nazwisko" name="nazwisko" class="form-control mb-3" required>
 
-                        <label for="password">Hasło:</label>
+                        <label for="password">Password:</label>
                         <input type="password" id="password" name="password" class="form-control mb-3" required>
 
-                        <label for="data_urodzenia">Data urodzenia:</label>
+                        <label for="data_urodzenia">Birthdate:</label>
                         <input type="date" id="data_urodzenia" name="data_urodzenia" class="form-control mb-3" required>
 
-                        <button type="submit" name="register" class="btn btn-primary w-100">Zarejestruj się</button>
+                        <button type="submit" name="register" class="btn btn-primary w-100">Register</button>
                     </form>
                 </div>
             </div>
@@ -126,17 +126,17 @@ $conn->close();
             <!-- 🔹 Karta logowania -->
             <div class="card shadow">
                 <div class="card-header bg-success text-white text-center">
-                    <h4>Logowanie</h4>
+                    <h4>Log in</h4>
                 </div>
                 <div class="card-body">
                     <form method="POST" action="register_login.php">
                         <label for="email_login">E-mail:</label>
                         <input type="email" id="email_login" name="email_login" class="form-control mb-3" required>
 
-                        <label for="password_login">Hasło:</label>
+                        <label for="password_login">Password:</label>
                         <input type="password" id="password_login" name="password_login" class="form-control mb-3" required>
 
-                        <button type="submit" name="login" class="btn btn-success w-100">Zaloguj się</button>
+                        <button type="submit" name="login" class="btn btn-success w-100">Log in</button>
                     </form>
                 </div>
             </div>

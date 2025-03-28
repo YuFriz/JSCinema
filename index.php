@@ -25,6 +25,10 @@ function fetchMovies($pdo, $status) {
     $stmt->execute(['status' => $status]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+$sections = [
+    "already showing" => "Already Showing",
+    "soon in cinema" => "Soon in Cinema"
+];
 
 ?>
 <!DOCTYPE html>
@@ -38,7 +42,7 @@ function fetchMovies($pdo, $status) {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="index">
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
         <a class="navbar-brand" href="index.php">JSCinema</a>
@@ -75,40 +79,55 @@ function fetchMovies($pdo, $status) {
 </nav>
 
 
-<div class="banner">
-    <?php include 'banner.php'; ?>
-</div>
+<?php include 'banner.php'; ?>
 
-<main>
-    <?php foreach (["already showing" => "Already Showing", "soon in cinema" => "Soon in Cinema"] as $status => $title): ?>
-        <section id="<?php echo str_replace(' ', '_', strtolower($status)); ?>">
+
+
+<main class="index">
+    <?php foreach ($sections as $status => $title): ?>
+        <section id="<?= str_replace(' ', '_', strtolower($status)) ?>" class="my-5">
             <div class="container">
-                <h2 class="text-center my-4"><?php echo $title; ?></h2>
-                <div class="row">
-                    <?php $movies = fetchMovies($pdo, $status);
-                    if ($movies):
-                        foreach ($movies as $movie): ?>
-                            <div class='col-md-3 mb-4'>
-                                <div class='card'>
-                                    <img src='<?php echo htmlspecialchars($movie['image_path']); ?>' class='card-img-top' alt='<?php echo htmlspecialchars($movie['name']); ?>'>
-                                    <div class='card-body text-center'>
-                                        <h5 class='card-title'><?php echo htmlspecialchars($movie['name']); ?></h5>
-                                        <a href='movie.php?id=<?php echo $movie['id']; ?>' class='btn btn-primary'>View Details</a>
+                <div class="p-4 bg-white rounded shadow position-relative overflow-hidden">
+                    <h2 class="text-center mb-4"><?= $title ?></h2>
+
+                    <div class="position-relative">
+                        <button class="movie-prev btn btn-dark position-absolute top-50 start-0 translate-middle-y z-3">
+                            &#10094;
+                        </button>
+                        <button class="movie-next btn btn-dark position-absolute top-50 end-0 translate-middle-y z-3">
+                            &#10095;
+                        </button>
+
+                        <div class="movie-carousel row flex-nowrap overflow-hidden" data-section="<?= $status ?>">
+                            <?php
+                            $movies = fetchMovies($pdo, $status);
+                            foreach ($movies as $movie): ?>
+                                <div class="col-md-3 movie-card flex-shrink-0">
+                                    <div class='card h-100'>
+                                        <img src='<?= htmlspecialchars($movie['image_path']) ?>' class='card-img-top' alt='<?= htmlspecialchars($movie['name']) ?>'>
+                                        <div class='card-body text-center'>
+                                            <h5 class='card-title'><?= htmlspecialchars($movie['name']) ?></h5>
+                                            <a href='movie.php?id=<?= $movie['id'] ?>' class='btn btn-primary'>View Details</a>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        <?php endforeach;
-                    else:
-                        echo "<p class='text-center'>No movies available.</p>";
-                    endif; ?>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
     <?php endforeach; ?>
 </main>
+
+
+
+
 <footer>
     <p>&copy; JSCinema. All rights reserved.</p>
 </footer>
+
+
 <!--SEARCH-->
 <script>
     $(document).ready(function() {
@@ -127,36 +146,73 @@ function fetchMovies($pdo, $status) {
                         if (response.length > 0) {
                             response.forEach(movie => {
                                 resultsContainer.append(`
-                                    <div class='search-item p-2 border-bottom d-flex align-items-center' data-url="movie.php?id=${movie.id}" style="cursor: pointer;">
-                                        <img src="${movie.image_path}" alt="${movie.name}" class="me-2 rounded" style="width: 50px; height: 50px;">
-                                        <span class="text-dark">${movie.name}</span>
-                                    </div>
-                                `);
-
+                                   <div class='search-item p-2 border-bottom d-flex align-items-center' data-url="movie.php?id=${movie.id}" style="cursor: pointer;">
+                                       <img src="${movie.image_path}" alt="${movie.name}" class="me-2 rounded" style="width: 50px; height: 50px;">
+                                       <span class="text-dark">${movie.name}</span>
+                                   </div>
+                               `);
                             });
 
                             // Dodanie event listenera dla kliknięcia na wynik
                             $(".search-item").on("click", function() {
                                 window.location.href = $(this).attr("data-url");
                             });
-                            } else {
-                                resultsContainer.append("<div class='search-item p-2 text-muted'>No results found</div>");
-                            }
-                            }
-                            });
-                            } else {
-                                $("#search-results").empty();
-                            }
-                            });
+                        } else {
+                            resultsContainer.append("<div class='search-item p-2 text-muted'>No results found</div>");
+                        }
+                    }
+                });
+            } else {
+                $("#search-results").empty();
+            }
+        });
 
                             // Ukryj wyniki po kliknięciu poza pole wyszukiwania
-                            $(document).click(function(event) {
-                                if (!$(event.target).closest("#myInput, #search-results").length) {
-                                    $("#search-results").empty();
-                                }
-                            });
-                            });
+        $(document).click(function(event) {
+            if (!$(event.target).closest("#myInput, #search-results").length) {
+                $("#search-results").empty();
+            }
+        });
+    });
 
+</script>
+
+
+
+<!-- MOVIE CAROUSEL -->
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const carousels = document.querySelectorAll(".movie-carousel");
+
+        carousels.forEach(carousel => {
+            const container = carousel;
+            const cardWidth = carousel.querySelector(".movie-card").offsetWidth + 16; // 16px = gap
+            let scrollPosition = 0;
+
+
+
+            const prevBtn = carousel.parentElement.querySelector(".movie-prev");
+            const nextBtn = carousel.parentElement.querySelector(".movie-next");
+
+            const scrollAmount = (cardWidth * 4) + 40;
+
+            prevBtn.addEventListener("click", () => {
+                scrollPosition -= scrollAmount;
+                if (scrollPosition < 0) scrollPosition = 0;
+                container.scrollTo({ left: scrollPosition, behavior: "smooth" });
+            });
+
+            nextBtn.addEventListener("click", () => {
+                scrollPosition += scrollAmount;
+                const maxScroll = container.scrollWidth - container.clientWidth;
+                if (scrollPosition > maxScroll) scrollPosition = maxScroll;
+                container.scrollTo({ left: scrollPosition, behavior: "smooth" });
+            });
+
+        });
+    });
 </script>
 
 

@@ -12,14 +12,16 @@ $conn->close();
 ?>
 
 <div class="banner-container">
-    <button class="banner-btn prev">&#10094;</button>
-
-    <div class="banner">
-        <?php foreach ($images as $index => $path): ?>
-            <img src="<?= htmlspecialchars($path) ?>" class="<?= $index === 0 ? 'active' : '' ?>" alt="Banner">
-        <?php endforeach; ?>
+    <div class="banner-card">
+        <div class="banner">
+            <?php foreach ($images as $index => $path): ?>
+                <img src="<?= htmlspecialchars($path) ?>" class="<?= $index === 0 ? 'active' : '' ?>" alt="Banner">
+            <?php endforeach; ?>
+        </div>
     </div>
 
+    <!-- Przyciski poza obrazem -->
+    <button class="banner-btn prev">&#10094;</button>
     <button class="banner-btn next">&#10095;</button>
 
     <div class="dots text-center mt-2">
@@ -28,6 +30,7 @@ $conn->close();
         <?php endforeach; ?>
     </div>
 </div>
+
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {

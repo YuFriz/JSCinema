@@ -36,6 +36,15 @@ while ($row = $imageResult->fetch_assoc()) {
     $movieImages[] = $row['image_path'];
 }
 
+// Pobranie recenzji dla danego filmu
+$reviewSql = "SELECT rr.*, u.imie, u.profile_image FROM reviews_ratings rr 
+              JOIN users u ON rr.user_id = u.id 
+              WHERE rr.movie_id = ? ORDER BY rr.created_at DESC";
+$reviewStmt = $conn->prepare($reviewSql);
+$reviewStmt->bind_param("i", $movieId);
+$reviewStmt->execute();
+$reviews = $reviewStmt->get_result();
+
 ?>
 
 <!DOCTYPE html>
@@ -48,7 +57,8 @@ while ($row = $imageResult->fetch_assoc()) {
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
-<body>
+<body class="movie-dark">
+
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
@@ -85,75 +95,119 @@ while ($row = $imageResult->fetch_assoc()) {
     </div>
 </nav>
 
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center">
-        <h2><?= htmlspecialchars($movie['name'] ?? 'Unknown Movie') ?></h2>
-        <span class="fs-4 text-warning">&#9733; <?= number_format($movie['stars'] ?? 0, 2) ?>/5</span>
-    </div>
 
-    <div class="row mt-4">
-        <div class="col-md-8">
-            <video class="w-100 border rounded shadow" controls>
-                <source src="Movies/<?= htmlspecialchars($movie['id']) ?>/<?= htmlspecialchars($movie['id']) ?>_video.mp4" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
+
+<!--MOVIE-->
+<div class="container mt-4 movie-section">
+
+
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2><?= htmlspecialchars($movie['name'] ?? 'Unknown Movie') ?></h2>
+            <span class="movie-rating">&#9733; <?= round($movie['stars'] ?? 0) ?>/5</span>
         </div>
-        <div class="col-md-4 d-flex flex-column justify-content-between">
-            <div class="border rounded p-3 shadow-sm">
-                <p><strong>Film genre:</strong> <?= htmlspecialchars($movie['genre'] ?? 'Unknown') ?></p>
-                <p><strong>Movie duration:</strong> <?= htmlspecialchars($movie['movie_duration'] ?? 'N/A') ?>h</p>
-                <p><strong>Director:</strong> <?= htmlspecialchars($movie['author'] ?? 'Unknown') ?></p>
-                <p><strong>Plays:</strong> <?= htmlspecialchars($movie['plays'] ?? 'Unknown') ?></p>
-            </div>
-            <a href="repertoires.php?movie_id=<?= $movieId ?>" class="btn btn-primary w-100 mt-3 py-2 shadow">Choose a session</a>
 
-
-        </div>
-    </div>
-    <?php if (!empty($movieImages)): ?>
         <div class="row mt-4">
-            <div class="col-md-12 border rounded p-3 shadow-sm">
-                <h4>Movie Images</h4>
-                <div class="d-flex flex-wrap">
-                    <?php foreach ($movieImages as $image): ?>
-                        <img src="<?= htmlspecialchars($image) ?>" class="img-thumbnail m-2 movie-image"
-                             style="width: 150px; height: auto; cursor: pointer;"
-                             data-bs-toggle="modal" data-bs-target="#imageModal"
-                             data-image="<?= htmlspecialchars($image) ?>">
-                    <?php endforeach; ?>
+            <div class="col-md-8">
+                <video class="w-100 border rounded shadow" controls>
+                    <source src="Movies/<?= htmlspecialchars($movie['id']) ?>/<?= htmlspecialchars($movie['id']) ?>_video.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            <div class="col-md-4 d-flex flex-column justify-content-between">
+                <div class="movie-info-card mb-3">
+                    <p><strong>Film genre:</strong> <?= htmlspecialchars($movie['genre'] ?? 'Unknown') ?></p>
+                    <p><strong>Movie duration:</strong> <?= htmlspecialchars($movie['movie_duration'] ?? 'N/A') ?>h</p>
+                    <p><strong>Director:</strong> <?= htmlspecialchars($movie['author'] ?? 'Unknown') ?></p>
+                    <p><strong>Plays:</strong> <?= htmlspecialchars($movie['plays'] ?? 'Unknown') ?></p>
+                </div>
+                <a href="repertoires.php?movie_id=<?= $movieId ?>" class="btn btn-primary w-100 py-2 shadow">
+                    <i class="bi bi-clock me-2"></i>Choose a session
+                </a>
+            </div>
+        </div>
 
+
+
+        <?php if (!empty($movieImages)): ?>
+            <div class="row mt-4">
+                <div class="col-md-12 movie-images-card">
+                    <h4>Movie Images</h4>
+                    <div class="d-flex flex-wrap justify-content-start">
+                        <?php foreach ($movieImages as $image): ?>
+                            <img src="<?= htmlspecialchars($image) ?>" class="img-thumbnail m-2 movie-image"
+                                 style="width: 150px; height: auto; cursor: pointer;"
+                                 data-bs-toggle="modal" data-bs-target="#imageModal"
+                                 data-image="<?= htmlspecialchars($image) ?>">
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
+
+
+        <!-- 🔹 Modal do powiększania zdjęć -->
+        <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg"> <!-- Użycie modal-lg dla większego rozmiaru -->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Movie Image</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <img id="modalImage" src="" class="img-fluid rounded shadow modal-img">
+                    </div>
                 </div>
             </div>
         </div>
-    <?php endif; ?>
 
-    <!-- 🔹 Modal do powiększania zdjęć -->
-    <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg"> <!-- Użycie modal-lg dla większego rozmiaru -->
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Movie Image</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body text-center">
-                    <img id="modalImage" src="" class="img-fluid rounded shadow modal-img">
-                </div>
+
+
+        <div class="row mt-4">
+            <div class="col-md-12 about-movie-card">
+                <h4>About the movie</h4>
+                <p><?= htmlspecialchars($movie['description'] ?? 'No description available.') ?></p>
             </div>
         </div>
+
     </div>
-
-
-
-    <div class="row mt-4">
-        <div class="col-md-12 border rounded p-3 shadow-sm">
-            <h4>About the movie</h4>
-            <p><?= htmlspecialchars($movie['description'] ?? 'No description available.') ?></p>
-        </div>
-    </div>
-
-
-
 </div>
+
+
+
+<div class="row mt-4">
+    <div class="col-md-12 border rounded p-4 shadow-sm bg-light">
+        <h4 class="mb-4">User Reviews</h4>
+
+        <?php if ($reviews->num_rows > 0): ?>
+            <?php while ($r = $reviews->fetch_assoc()): ?>
+                <div class="d-flex align-items-center border rounded p-3 mb-3 bg-white shadow-sm" style="border-left: 5px solid #ffc107;">
+                    <img src="uploads/<?= htmlspecialchars($r['profile_image']) ?>" alt="Profile" class="rounded-circle me-3" style="width: 70px; height: 70px; object-fit: cover; border: 2px solid #ddd;">
+
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <strong class="text-dark fs-5"><?= htmlspecialchars($r['imie']) ?></strong>
+                            <div class="bg-warning bg-opacity-25 px-3 py-1 rounded text-warning fw-bold" style="font-size: 1.1rem;">
+                                <?php
+                                $stars = (int)$r['star'];
+                                for ($i = 1; $i <= 5; $i++) {
+                                    echo $i <= $stars ? '★' : '☆';
+                                }
+                                ?>
+                            </div>
+                        </div>
+                        <p class="mb-0 text-muted fst-italic"><?= htmlspecialchars($r['review']) ?></p>
+                    </div>
+                </div>
+            <?php endwhile; ?>
+        <?php else: ?>
+            <p class="text-muted">No reviews available.</p>
+        <?php endif; ?>
+    </div>
+</div>
+
+
+
 
 
 
