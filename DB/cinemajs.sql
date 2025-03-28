@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 27, 2025 at 12:57 PM
+-- Generation Time: Mar 28, 2025 at 01:09 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -858,7 +858,7 @@ CREATE TABLE `users` (
   `nazwisko` varchar(50) NOT NULL,
   `password` varchar(255) NOT NULL,
   `data_urodzenia` date NOT NULL,
-  `profile_image` varchar(255) NOT NULL,
+  `profile_image` varchar(255) DEFAULT NULL,
   `Status` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -869,7 +869,8 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `email`, `imie`, `nazwisko`, `password`, `data_urodzenia`, `profile_image`, `Status`, `created_at`) VALUES
 (3, 'shirvinkaya05@gmail.com', 'Justyna', 'Sirvinskaja', '$2y$10$VgrHgSIldY1WaupT0n/Tfe.ThbOMUcJznVfFLR8Mc4NaUE3tZ3.Rq', '2025-01-15', '1742471498_color pallet2.jpg', 'admin', '2025-01-19 13:55:46'),
-(6, 'jsirvinskaja@gmail.com', 'userJust', 'user', '$2y$10$LmpSJxsS6d6/aUyDsRuzQO54Ajlya3ldyTB9cXHcdiP32VW4qyrK.', '2024-12-31', '1741681478_c.jpg', 'user', '2025-01-20 13:48:09');
+(6, 'jsirvinskaja@gmail.com', 'userJust', 'user', '$2y$10$LmpSJxsS6d6/aUyDsRuzQO54Ajlya3ldyTB9cXHcdiP32VW4qyrK.', '2024-12-31', '1741681478_c.jpg', 'user', '2025-01-20 13:48:09'),
+(8, '111@gmail.com', 'Pierwszy', 'Pierwszenski', '$2y$10$cAmynXre4iJviO6NA.KdXuMQKt1WBo1a4vo8f3MDDYJ7d426gKmXC', '2013-05-07', NULL, 'user', '2025-03-28 09:31:59');
 
 --
 -- Indexes for dumped tables
@@ -1015,7 +1016,7 @@ ALTER TABLE `seats`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- Constraints for dumped tables
