@@ -3,7 +3,8 @@ session_start();
 require 'db_connection.php';
 require 'vendor/autoload.php';
 
-global $conn;
+unset($_SESSION['reservation_timer_start'], $_SESSION['timer_screening_id']);
+
 
 $step = $_GET['step'] ?? 'confirm';
 
@@ -143,7 +144,8 @@ if ($step === 'success') {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Thank You for Your Purchase</title>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="style.css">
         <script>
             setTimeout(function() {
                 document.getElementById('downloadLink').click();
@@ -151,6 +153,23 @@ if ($step === 'success') {
         </script>
     </head>
     <body class="container text-center mt-5">
+
+    <div class="stepper d-flex justify-content-between align-items-center my-4 px-md-5">
+        <div class="step active">
+            <div class="circle"></div>
+            <div class="label">Tickets</div>
+        </div>
+        <div class="line active mx-2"></div>
+        <div class="step active">
+            <div class="circle"></div>
+            <div class="label">Seats</div>
+        </div>
+        <div class="line active mx-2"></div>
+        <div class="step active">
+            <div class="circle"></div>
+            <div class="label">Payment</div>
+        </div>
+    </div>
     <h1>Thank You for Your Purchase at JSCinema</h1>
     <p>Your purchase has been successfully completed.</p>
 

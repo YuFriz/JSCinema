@@ -14,7 +14,7 @@ require 'session_manager.php';
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="repertoires">
 
 <!-- GÓRNA NAWIGACJA -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -54,11 +54,13 @@ require 'session_manager.php';
 
 
 <main class="container mt-4">
-    <h1>Movie Repertoire</h1>
+    <div class="repertoire-card p-4 shadow-lg rounded-4">
+    <h1 class="repertoire-title">Movie Repertoires</h1>
+
 
     <!-- Pasek z datami i filtr gatunku -->
-    <div class="bg-dark text-white p-3 rounded">
-        <div class="row">
+    <div class="repertoire-filter-bar">
+    <div class="row">
             <div class="col-md-9 d-flex flex-wrap">
                 <?php
                 $weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -97,6 +99,19 @@ require 'session_manager.php';
 
 
 <script>
+    function calculateOffset(available, total) {
+        const percent = available / total;
+        const circumference = 2 * Math.PI * 20; // 2πr, r = 20
+        return circumference * (1 - percent);
+    }
+
+    function getColor(available, total) {
+        const percent = available / total;
+        if (percent > 0.6) return "#7ED321";   // zielony
+        if (percent > 0.3) return "#f5a623";   // pomarańczowy
+        return "#d0021b";                      // czerwony
+    }
+
     function getMovieIdFromURL() {
         const urlParams = new URLSearchParams(window.location.search);
         return urlParams.get('movie_id');
@@ -119,42 +134,65 @@ require 'session_manager.php';
                 moviesList.innerHTML = '';
 
                 if (data.length > 0) {
+                    // Sortowanie po czasie: od najwcześniejszego do najpóźniejszego
+                    data.sort((a, b) => {
+                        return a.start_time.localeCompare(b.start_time);
+                    });
+
                     data.forEach(movie => {
                         let movieElement = document.createElement('div');
                         movieElement.classList.add('col-md-12', 'mb-4');
 
                         movieElement.innerHTML = `
-                        <div class="card p-2">
-                            <div class="row g-0">
-                                <div class="col-md-4">
-                                    <img src="${movie.img1}" class="img-fluid rounded-start" alt="${movie.name}">
-                                </div>
-                                <div class="col-md-8">
-                                    <div class="card-body">
-                                        <h5 class="card-title">${movie.name}</h5>
-                                        <p class="card-text">${movie.description}</p>
-                                        <p><strong>Time:</strong> ${movie.start_time}</p>
-                                        <p><strong>Auditorium:</strong> ${movie.auditorium}</p>
-                                        <p><strong>Seats:</strong> ${movie.available_seats} / ${movie.total_seats}</p>
-                                        <form action="check_login.php" method="get">
-                                            <input type="hidden" name="movie_id" value="${movie.id}">
-                                            <input type="hidden" name="screening_id" value="${movie.screening_id}">
-                                            <input type="hidden" name="movie_name" value="${movie.name}">
-                                            <input type="hidden" name="start_time" value="${movie.start_time}">
-                                            <button type="submit" class="btn btn-primary">Reserve</button>
-                                        </form>
-                                    </div>
-                                </div>
+            <div class="movie-modern-card d-flex flex-wrap align-items-center bg-white shadow-sm rounded-4 overflow-hidden p-3">
+                <div class="movie-img col-md-3 text-center mb-3 mb-md-0">
+                    <img src="${movie.img1}" class="img-fluid rounded-3" alt="${movie.name}">
+                </div>
+                <div class="movie-info col-md-9 px-4">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-2">
+                        <h4 class="fw-bold text-dark mb-2 mb-md-0">${movie.name}</h4>
+                        <span class="text-muted fs-5"><i class="bi bi-clock me-1"></i> ${movie.start_time}</span>
+                    </div>
+                    <p class="text-muted">${movie.description}</p>
+                    <div class="row mt-2">
+                        <div class="col-md-4"><strong>Auditorium:</strong> ${movie.auditorium}</div>
+                        <div class="col-md-4 d-flex align-items-center">
+                            <div class="progress-ring me-2">
+                                <svg width="50" height="50">
+                                    <circle cx="25" cy="25" r="20" stroke="#eee"></circle>
+                                    <circle cx="25" cy="25" r="20"
+                                        stroke="${getColor(movie.available_seats, movie.total_seats)}"
+                                        stroke-dasharray="126"
+                                        stroke-dashoffset="${calculateOffset(movie.available_seats, movie.total_seats)}"></circle>
+                                </svg>
+                            </div>
+                            <div>
+                                <small class="text-muted">Available</small><br>
+                                <strong>${movie.available_seats}</strong>
                             </div>
                         </div>
-                    `;
+
+                    </div>
+                    <div class="text-end mt-3">
+                        <form action="check_login.php" method="get">
+                            <input type="hidden" name="movie_id" value="${movie.id}">
+                            <input type="hidden" name="screening_id" value="${movie.screening_id}">
+                            <input type="hidden" name="movie_name" value="${movie.name}">
+                            <input type="hidden" name="start_time" value="${movie.start_time}">
+                            <button type="submit" class="btn btn-danger px-4">Reserve</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            `;
                         moviesList.appendChild(movieElement);
                     });
                 } else {
                     moviesList.innerHTML = '<p class="text-white">No movies available for this selection.</p>';
                 }
             })
-            .catch(error => console.error('Error:', error));
+
+                .catch(error => console.error('Error:', error));
     }
 
 
@@ -172,10 +210,23 @@ require 'session_manager.php';
         loadMovies();
     });
 
+    // Po załadowaniu strony: zaznacz dzisiejszy przycisk i załaduj filmy
+    document.addEventListener("DOMContentLoaded", function () {
+        const today = new Date().toISOString().split("T")[0]; // format: yyyy-mm-dd
+        const buttons = document.querySelectorAll('.date-btn');
+
+        buttons.forEach(btn => {
+            if (btn.dataset.date === today) {
+                btn.classList.add('active');
+            }
+        });
+
+        loadMovies();
+    });
 
 
 </script>
-
+</div>
 
 
 

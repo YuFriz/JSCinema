@@ -16,10 +16,9 @@ require 'session_manager.php';
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="about">
 
 <!--GORNIA NAWIGACJA -->
-
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
         <a class="navbar-brand" href="index.php">JSCinema</a>
@@ -59,7 +58,9 @@ require 'session_manager.php';
 
 <!-- Główna zawartość -->
 <main class="container my-5">
-    <h1 class="text-center mb-4">About Our Cinema Theater</h1>
+    <div class="about-card p-4 shadow-lg">
+
+    <h1 class="about-title">About Our Cinema Theater</h1>
 
     <section class="row">
         <div class="col-md-6 d-flex align-items-center">
@@ -96,6 +97,7 @@ require 'session_manager.php';
             <img src="about/image4.jpg" class="img-fluid rounded shadow" alt="Cinema Image 4">
         </div>
     </section>
+    </div>
 </main>
 
 <!-- Stopka -->
