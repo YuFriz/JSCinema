@@ -37,10 +37,23 @@ if ($view === 'week') {
 // Statistics
 $movie_count = $conn->query("SELECT COUNT(*) AS total FROM movies")->fetch_assoc()['total'];
 
-// Top 5 most watched movies
-$popular_movies = $conn->query("SELECT m.name, COUNT(p.id) AS tickets FROM movies m 
+// Top 5 All Movies
+$popular_all_movies = $conn->query("SELECT m.name, COUNT(p.id) AS tickets 
+    FROM movies m 
     JOIN purchased_tickets p ON m.id = p.movie_id 
-    GROUP BY m.id ORDER BY tickets DESC LIMIT 5");
+    GROUP BY m.id 
+    ORDER BY tickets DESC 
+    LIMIT 5");
+
+// Top 5 Already Showing Movies
+$popular_showing_movies = $conn->query("SELECT m.name, COUNT(p.id) AS tickets 
+    FROM movies m 
+    JOIN purchased_tickets p ON m.id = p.movie_id 
+    WHERE m.status = 'already showing' 
+    GROUP BY m.id 
+    ORDER BY tickets DESC 
+    LIMIT 5");
+
 
 // Weekly summary (past 7 days)
 $weekly_summary = $conn->query("SELECT DATE(screening_date) AS date, COUNT(id) AS screenings, 
@@ -60,7 +73,7 @@ $monthly_summary = $conn->query("SELECT DATE_FORMAT(screening_date, '%Y-%m') AS 
     WHERE screening_date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
     GROUP BY DATE_FORMAT(screening_date, '%Y-%m') ORDER BY DATE_FORMAT(screening_date, '%Y-%m') ASC");
 
-// Movies with status 'coming soon'
+// movies with status 'coming soon'
 $coming_soon = $conn->query("SELECT name, movie_duration, created_at FROM movies WHERE status = 'soon in cinema' ORDER BY created_at DESC");
 
 
@@ -118,7 +131,7 @@ $conn->close();
         </div>
     </div>
 
-    <div class="row mt-4">
+    <div class="row mt-4 mb-4">
         <div class="col-md-12">
             <h4>Coming Soon Movies</h4>
             <?php if ($coming_soon->num_rows > 0): ?>
@@ -138,20 +151,28 @@ $conn->close();
 
 
 
-    <!-- Most Watched Movies -->
-    <div class="row mt-4">
-        <div class="col-md-12">
-            <h4>Top 5 Most Watched Movies</h4>
-            <ul class="list-group">
-                <?php while ($movie = $popular_movies->fetch_assoc()): ?>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <?php echo $movie['name']; ?>
-                        <span class="badge bg-primary rounded-pill"><?php echo $movie['tickets']; ?> Tickets</span>
-                    </li>
-                <?php endwhile; ?>
-            </ul>
-        </div>
-    </div>
+    <!-- Top 5 All Movies -->
+    <h4>Top 5 Most Watched Movies (All)</h4>
+    <ul class="list-group mb-4">
+        <?php while ($movie = $popular_all_movies->fetch_assoc()): ?>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <?= htmlspecialchars($movie['name']) ?>
+                <span class="badge bg-primary rounded-pill"><?= $movie['tickets'] ?> Tickets</span>
+            </li>
+        <?php endwhile; ?>
+    </ul>
+
+    <!-- Top 5 Already Showing -->
+    <h4>Top 5 Watched (Already Showing)</h4>
+    <ul class="list-group">
+        <?php while ($movie = $popular_showing_movies->fetch_assoc()): ?>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <?= htmlspecialchars($movie['name']) ?>
+                <span class="badge bg-success rounded-pill"><?= $movie['tickets'] ?> Tickets</span>
+            </li>
+        <?php endwhile; ?>
+    </ul>
+
 
     <!-- Weekly and Monthly Summaries -->
     <div class="row mt-4">

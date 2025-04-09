@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 28, 2025 at 01:09 PM
+-- Generation Time: Apr 09, 2025 at 12:05 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -123,14 +123,14 @@ CREATE TABLE `movies` (
 --
 
 INSERT INTO `movies` (`id`, `name`, `description`, `stars`, `author`, `video`, `movie_duration`, `plays`, `status`, `coming_date`, `end_date`, `created_at`, `updated_at`) VALUES
-(1, 'Inception', 'A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O., but his tragic past may doom the project and his team to disaster.', 5.0, 'Christopher Nolan', 'Movies/1/vid.mp4', 148, 'Leonardo DiCaprio, Joseph Gordon-Levitt, Ellen Page', 'already showing', '2025-03-23', '2025-04-13', '2025-01-16 15:45:50', '2025-03-24 10:52:02'),
-(2, 'Matrix', 'When a beautiful stranger leads computer hacker Neo to a forbidding underworld, he discovers the shocking truth--the life he knows is the elaborate deception of an evil cyber-intelligence.', 0.0, 'Lana Wachowski, Lilly Wachowski', 'Movies/2/vid.mp4', 136, 'Keanu Reeves, Laurence Fishburne, Carrie-Anne Moss', 'already showing', '2025-03-09', '2025-04-06', '2025-01-16 16:29:16', '2025-03-24 11:18:39'),
-(3, 'The Pursuit of Happyness', 'Based on a true story about a man named Christopher Gardner. Gardner has invested heavily in a device known as a \"bone density scanner\". He feels like he has it made selling these devices. However, they do not sell well as they are marginally better than x-ray at a much higher price. As Gardner works to make ends meet, his wife leaves him and he loses his apartment. Forced to live out in the streets with his son, Gardner continues to sell bone density scanners while concurrently taking on an unpaid internship as a stockbroker, with slim chances for advancement to a paid position. Before he can receive pay, he needs to outshine the competition through 6 months of training, and to sell his devices to stay afloat.', 0.0, 'Gabriele Muccino', 'Movies/3/vid.mp4', 117, 'Will Smith, Jaden Smith, Thandie Newton', 'soon in cinema', '2025-03-09', '2025-03-23', '2025-01-19 12:43:15', '2025-03-24 11:33:26'),
+(1, 'Inception', 'A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O., but his tragic past may doom the project and his team to disaster.', 5.0, 'Christopher Nolan', 'movies/1/1_video.mp4', 148, 'Leonardo DiCaprio, Joseph Gordon-Levitt, Ellen Page', 'already showing', '2025-03-23', '2025-04-14', '2025-01-16 15:45:50', '2025-04-09 07:56:08'),
+(2, 'Matrix', 'When a beautiful stranger leads computer hacker Neo to a forbidding underworld, he discovers the shocking truth--the life he knows is the elaborate deception of an evil cyber-intelligence.', 0.0, 'Lana Wachowski, Lilly Wachowski', 'Movies/2/vid.mp4', 136, 'Keanu Reeves, Laurence Fishburne, Carrie-Anne Moss', 'soon in cinema', '2025-04-20', '2025-05-04', '2025-01-16 16:29:16', '2025-04-08 08:34:56'),
+(3, 'The Pursuit of Happyness', 'Based on a true story about a man named Christopher Gardner. Gardner has invested heavily in a device known as a \"bone density scanner\". He feels like he has it made selling these devices. However, they do not sell well as they are marginally better than x-ray at a much higher price. As Gardner works to make ends meet, his wife leaves him and he loses his apartment. Forced to live out in the streets with his son, Gardner continues to sell bone density scanners while concurrently taking on an unpaid internship as a stockbroker, with slim chances for advancement to a paid position. Before he can receive pay, he needs to outshine the competition through 6 months of training, and to sell his devices to stay afloat.', 0.0, 'Gabriele Muccino', 'Movies/3/vid.mp4', 117, 'Will Smith, Jaden Smith, Thandie Newton', 'soon in cinema', '2025-04-20', '2025-05-12', '2025-01-19 12:43:15', '2025-04-08 10:09:02'),
 (11, 'The Northman', 'The Viking Age. With a mind aflame with hate and revenge, Prince Amleth, the wronged son of King Aurvandill War-Raven, heads to cold, windswept Iceland to retrieve what was stolen from him: a father, a mother, and a kingdom. And like a war dog picking up the enemy\'s scent, brutal Amleth embarks on a murderous quest to find the hateful adversary, whose life is forever woven together with his by the threads of fate. Now, in the name of Valhalla, no one can stop the Northman, not even God.—Nick Riganas', 2.0, ' Robert Eggers', 'Movies/11/11_video.mp4', 137, 'Alexander Skarsgård, Nicole Kidman, Claes Bang, Ethan Hawke, Anya Taylor-Joy, Gustav Lindh, Willem Dafoe, Björk, Ralph Ineson, Hafþór Júlíus Björnsson', 'already showing', '2025-03-23', '2025-04-13', '2025-02-28 18:38:23', '2025-03-24 10:52:02'),
 (12, 'Spider-Man', 'Based on Marvel Comics\' superhero character, this is a story of Peter Parker who is a nerdy high-schooler. He was orphaned as a child, bullied by jocks, and can\'t confess his crush for his stunning neighborhood girl Mary Jane Watson. To say his life is \"miserable\" is an understatement. But one day while on an excursion to a laboratory a runaway radioactive spider bites him... and his life changes in a way no one could have imagined. Peter acquires a muscle-bound physique, clear vision, ability to cling to surfaces and crawl over walls, shooting webs from his wrist ... but the fun isn\'t going to last. An eccentric millionaire Norman Osborn administers a performance enhancing drug on himself and his maniacal alter ego Green Goblin emerges. Now Peter Parker has to become Spider-Man and take Green Goblin to the task... or else Goblin will kill him. They come face to face and the war begins in which only one of them will survive at the end.', 0.0, 'Sam Raimi', 'Movies/12/12_video.mp4', 121, 'Tobey Maguire, Willem Dafoe, Kirsten Dunst, James Franco, Cliff Robertson, Rosemary Harris, J.K. Simmons, Joe Manganiello, Gerry Becker, Bill Nunn', 'already showing', '2025-03-23', '2025-04-13', '2025-02-28 18:43:02', '2025-03-24 10:52:02'),
 (16, 'Brave', 'Set in Scotland in a rugged and mythical time, this movie features Princess Merida (Kelly Macdonald), an aspiring archer and impetuous daughter of Queen Elinor (Dame Emma Thompson). Merida makes a reckless choice that unleashes unintended peril and forces her to spring into action to set things right.', 0.0, 'Mark Andrews, Brenda Chapman, Steve Purcell', 'Movies/16/16_video.mp4', 93, 'Kelly Macdonald, Billy Connolly, Emma Thompson', 'already showing', '2025-03-23', '2025-04-13', '2025-03-10 09:56:33', '2025-03-24 11:19:44'),
-(18, 'Wreck-It Ralph', 'Ralph is a video game villain who longs to be a hero. He embarks on a journey across the arcade world to prove himself, encountering new friends and enemies along the way.', 0.0, 'Rich Moore', 'Movies/18/18_video.mp4', 101, 'John C. Reilly, Sarah Silverman, Jack McBrayer', 'soon in cinema', '2025-03-09', '2025-03-23', '0000-00-00 00:00:00', '2025-03-24 10:52:02'),
-(19, 'Venom', 'Journalist Eddie Brock gains superpowers after bonding with an alien symbiote. He struggles to control his newfound powers while facing dark forces that seek to exploit them.', 0.0, 'Ruben Fleischer', 'Movies/19/19_video.mp4', 112, 'Tom Hardy, Michelle Williams, Riz Ahmed', 'soon in cinema', '2025-03-09', '2025-03-23', '0000-00-00 00:00:00', '2025-03-24 10:52:02');
+(18, 'Wreck-It Ralph', 'Ralph is a video game villain who longs to be a hero. He embarks on a journey across the arcade world to prove himself, encountering new friends and enemies along the way.', 0.0, 'Rich Moore', 'Movies/18/18_video.mp4', 101, 'John C. Reilly, Sarah Silverman, Jack McBrayer', 'soon in cinema', '2025-04-20', '2025-05-11', '0000-00-00 00:00:00', '2025-04-08 10:09:39'),
+(19, 'Venom', 'Journalist Eddie Brock gains superpowers after bonding with an alien symbiote. He struggles to control his newfound powers while facing dark forces that seek to exploit them.', 0.0, 'Ruben Fleischer', 'movies/19/19_video.mp4', 112, 'Tom Hardy, Michelle Williams, Riz Ahmed', 'screening ended', '2025-03-09', '2025-03-23', '0000-00-00 00:00:00', '2025-04-09 07:55:11');
 
 -- --------------------------------------------------------
 
@@ -261,7 +261,28 @@ INSERT INTO `purchased_tickets` (`id`, `user_id`, `movie_id`, `screening_id`, `s
 (25, 6, 1, 5, 431, 'children', 4.50, '2025-03-11 09:58:01'),
 (26, 6, 19, 6, 422, 'children', 4.50, '2025-03-12 07:32:44'),
 (27, 6, 19, 6, 423, 'children', 4.50, '2025-03-12 07:32:44'),
-(28, NULL, 19, 14, 259, 'children', 4.50, '2025-03-20 11:49:13');
+(28, NULL, 19, 14, 259, 'children', 4.50, '2025-03-20 11:49:13'),
+(29, 3, 16, 23, 185, 'children', 4.50, '2025-04-01 11:00:12'),
+(30, 3, 16, 23, 243, 'children', 4.50, '2025-04-01 11:00:12'),
+(31, 3, 16, 23, 301, 'children', 4.50, '2025-04-01 11:00:12'),
+(32, 3, 16, 23, 186, 'youth', 5.50, '2025-04-01 11:00:28'),
+(33, 3, 16, 23, 187, 'youth', 5.50, '2025-04-01 11:00:28'),
+(34, 3, 16, 23, 244, 'youth', 5.50, '2025-04-01 11:00:28'),
+(35, 3, 16, 23, 245, 'youth', 5.50, '2025-04-01 11:00:28'),
+(36, 3, 16, 23, 302, 'youth', 5.50, '2025-04-01 11:00:28'),
+(37, 3, 1, 22, 5, 'regular', 7.99, '2025-04-02 09:54:31'),
+(38, 3, 1, 22, 6, 'regular', 7.99, '2025-04-02 09:54:31'),
+(39, 3, 1, 22, 432, 'regular', 7.99, '2025-04-02 09:54:59'),
+(40, 3, 1, 22, 481, 'regular', 7.99, '2025-04-02 09:54:59'),
+(41, 3, 1, 22, 249, 'youth', 5.50, '2025-04-02 09:55:56'),
+(42, 3, 1, 22, 250, 'senior', 4.00, '2025-04-02 09:55:56'),
+(43, 3, 1, 22, 307, 'youth', 5.50, '2025-04-02 09:56:29'),
+(44, 3, 1, 22, 308, 'senior', 4.00, '2025-04-02 09:56:29'),
+(45, 3, 1, 22, 366, 'senior', 4.00, '2025-04-02 09:56:29'),
+(46, 3, 1, 22, 423, 'regular', 7.99, '2025-04-02 10:36:10'),
+(47, 3, 1, 22, 424, 'regular', 7.99, '2025-04-02 10:36:10'),
+(48, 3, 2, 25, 308, 'regular', 7.99, '2025-04-04 09:59:06'),
+(49, 3, 2, 25, 306, 'regular', 7.99, '2025-04-04 10:26:48');
 
 -- --------------------------------------------------------
 
@@ -323,7 +344,15 @@ INSERT INTO `screenings` (`id`, `movie_id`, `screening_date`, `start_time`, `aud
 (17, 12, '2025-03-25', '09:00:00', 1),
 (18, 1, '2025-03-25', '11:30:00', 1),
 (19, 1, '2025-03-26', '09:30:00', 1),
-(20, 11, '2025-03-26', '12:00:00', 1);
+(20, 11, '2025-03-26', '12:00:00', 1),
+(22, 1, '2025-04-03', '09:30:00', 1),
+(23, 16, '2025-04-01', '09:00:00', 1),
+(24, 1, '2025-04-01', '11:00:00', 1),
+(25, 2, '2025-04-04', '10:30:00', 1),
+(26, 16, '2025-04-13', '09:30:00', 2),
+(27, 1, '2025-04-14', '09:00:00', 1),
+(28, 16, '2025-04-11', '16:00:00', 1),
+(29, 12, '2025-04-12', '16:30:00', 2);
 
 -- --------------------------------------------------------
 
@@ -986,13 +1015,13 @@ ALTER TABLE `movies`
 -- AUTO_INCREMENT for table `movie_images`
 --
 ALTER TABLE `movie_images`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
 
 --
 -- AUTO_INCREMENT for table `purchased_tickets`
 --
 ALTER TABLE `purchased_tickets`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
 -- AUTO_INCREMENT for table `reviews_ratings`
@@ -1004,7 +1033,7 @@ ALTER TABLE `reviews_ratings`
 -- AUTO_INCREMENT for table `screenings`
 --
 ALTER TABLE `screenings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT for table `seats`

@@ -35,10 +35,17 @@ if (!empty($genreFilter)) {
     $conditions[] = "genres.name = '" . $conn->real_escape_string($genreFilter) . "'";
 }
 
-// Jeśli istnieją warunki, dodajemy je do zapytania
+
+// Domyślnie ukryjemy filmy zakończone, chyba że podano konkretny status
+if (empty($statusFilter)) {
+    $conditions[] = "movies.status != 'screening ended'";
+}
+
+// Dodaj warunki do zapytania
 if (!empty($conditions)) {
     $sql .= " WHERE " . implode(" AND ", $conditions);
 }
+
 
 // Grupowanie wyników
 $sql .= " GROUP BY movies.id";
@@ -86,13 +93,20 @@ if (!$result) {
                         <div id="search-results" class="position-absolute w-100 bg-white shadow rounded"></div>
                     </form>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item d-flex align-items-center ms-2">
                     <?php if (isset($_SESSION['user_id'])): ?>
-                        <a class="nav-link d-flex align-items-center justify-content-center border rounded p-2 ms-2" href="profile.php" title="Profile" style="width: 42px; height: 42px;">
-                            <i class="bi bi-person-circle fs-4"></i>
-                        </a>
+                        <div class="d-flex align-items-center gap-2">
+                            <a class="nav-link d-flex align-items-center justify-content-center border rounded p-2"
+                               href="profile.php" title="Profile" style="width: 42px; height: 42px;">
+                                <i class="bi bi-person-circle fs-4"></i>
+                            </a>
+                            <form action="logout.php" method="post">
+                                <button type="submit" class="btn btn-outline-danger btn-sm">Logout</button>
+                            </form>
+                        </div>
                     <?php else: ?>
-                        <a class="nav-link d-flex align-items-center justify-content-center border rounded p-2 ms-2" href="register_login.php" title="Login/Register" style="width: 42px; height: 42px;">
+                        <a class="nav-link d-flex align-items-center justify-content-center border rounded p-2 ms-2"
+                           href="register_login.php" title="Login/Register" style="width: 42px; height: 42px;">
                             <i class="bi bi-box-arrow-in-right fs-4"></i>
                         </a>
                     <?php endif; ?>
@@ -102,6 +116,7 @@ if (!$result) {
         </div>
     </div>
 </nav>
+
 
 <!-- 🔹 Filtry -->
 <div class="container my-4">
@@ -202,11 +217,11 @@ if (!$result) {
                     $comingSoonBadge = ($movie['status'] === 'soon in cinema') ? "<div class='coming-soon-banner'>Coming Soon</div>" : "";
                     echo "
             <div class='col-md-4 mb-4'>
-                <div class='card position-relative movie-card' onclick=\"window.location.href='movie.php?id={$movie['id']}'\">
+                <div class='card position-relative movie-card allmovie-card' onclick=\"window.location.href='movie.php?id={$movie['id']}'\">
                     <img src='{$movie['img1']}' class='card-img-top' alt='{$movie['name']}' style='height: 300px; object-fit: cover;'>
-                    <div class='card-body text-center'>
-                        <h5 class='card-title'>{$movie['name']}</h5>
-                        <p class='text-muted'><strong>Genres:</strong> " . htmlspecialchars($movie['genres']) . "</p>
+                    <div class='allmovie-card text-center'>
+                        <h5 class='card-allmovie-title'>{$movie['name']}</h5>
+                        <p><strong>Genres:</strong> " . htmlspecialchars($movie['genres']) . "</p>
                         <p><strong>Duration:</strong> {$movie['movie_duration']} min</p>
                         <p><strong>Stars:</strong> " . str_repeat('⭐', max(0, (int) $movie['stars'])) . "</p>
                     </div>
@@ -264,11 +279,11 @@ if (!$result) {
 
                             moviesContainer.append(`
                         <div class='col-md-4 mb-4'>
-                            <div class='card movie-card position-relative' onclick="window.location.href='movie.php?id=${movie.id}'">
+                            <div class='card position-relative movie-card allmovie-card' onclick=\"window.location.href='movie.php?id={$movie['id']}'\">
                                 <img src="${movie.img1}" class='card-img-top' alt="${movie.name}" style='height: 300px; object-fit: cover;'>
-                                <div class='card-body text-center'>
-                                    <h5 class='card-title'>${movie.name}</h5>
-                                    <p class='text-muted'><strong>Genres:</strong> ${movie.genres}</p>
+                                 <div class='allmovie-card text-center'>
+                                    <h5 class='card-allmovie-title'>${movie.name}</h5>
+                                    <p><strong>Genres:</strong> ${movie.genres}</p>
                                     <p><strong>Duration:</strong> ${movie.movie_duration} min</p>
                                     <p><strong>Stars:</strong> ${starsDisplay}</p>
                                 </div>
@@ -310,11 +325,11 @@ if (!$result) {
                                 let starsDisplay = '⭐'.repeat(movie.stars);
                                 moviesContainer.append(`
                             <div class='col-md-4 mb-4'>
-                                <div class='card movie-card position-relative' onclick="window.location.href='movie.php?id=${movie.id}'">
+                                <div class='card position-relative movie-card allmovie-card' onclick=\"window.location.href='movie.php?id={$movie['id']}'\">
                                     <img src="${movie.img1}" class='card-img-top' alt="${movie.name}" style='height: 300px; object-fit: cover;'>
-                                    <div class='card-body text-center'>
-                                        <h5 class='card-title'>${movie.name}</h5>
-                                        <p class='text-muted'><strong>Genres:</strong> ${movie.genres}</p>
+                                     <div class='allmovie-card text-center'>
+                                        <h5 class='card-allmovie-title'>${movie.name}</h5>
+                                        <p><strong>Genres:</strong> ${movie.genres}</p>
                                         <p><strong>Duration:</strong> ${movie.movie_duration} min</p>
                                         <p><strong>Stars:</strong> ${starsDisplay}</p>
                                     </div>

@@ -100,6 +100,7 @@ while ($row = $seats_result->fetch_assoc()) {
     <title>Seat Selection</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -149,9 +150,8 @@ while ($row = $seats_result->fetch_assoc()) {
     </div>
 </div>
 
-<div class="container mt-4">
+<div class="container mt-4 text-center">
     <h3>Select Your Seats</h3>
-    <form action="reservation_process.php" method="post">
         <form action="reservation_process.php" method="post" id="seatForm">
             <input type="hidden" name="movie_id" value="<?php echo $movie_id; ?>">
             <input type="hidden" name="screening_id" value="<?php echo $screening_id; ?>">
@@ -176,7 +176,7 @@ while ($row = $seats_result->fetch_assoc()) {
                                        data-row="<?php echo htmlspecialchars($row_number); ?>"
                                        data-seat="<?php echo htmlspecialchars($seat['seat_number']); ?>"
                                     <?php echo $seat['is_taken'] ? 'disabled' : ''; ?>>
-                                <?php echo htmlspecialchars($seat['seat_number']); ?>
+                                <i class="fas fa-chair" title="Seat <?php echo htmlspecialchars($seat['seat_number']); ?>"></i>
                             </label>
                         <?php endforeach; ?>
                     </div>
@@ -184,7 +184,15 @@ while ($row = $seats_result->fetch_assoc()) {
             <?php endforeach; ?>
         </div>
 
-        <h3 class="mt-4">Ticket Summary:</h3>
+            <div class="d-flex justify-content-center align-items-center gap-3 mt-4 legend">
+            <span class="seat d-inline-flex"><i class="fas fa-chair"></i>&nbsp;Available</span>
+                <span class="seat selected d-inline-flex"><i class="fas fa-chair"></i>&nbsp;Selected</span>
+                <span class="seat taken d-inline-flex"><i class="fas fa-chair"></i>&nbsp;Taken</span>
+            </div>
+
+
+
+            <h3 class="mt-4">Ticket Summary:</h3>
         <ul class="list-group">
             <?php foreach ($selected_tickets as $type => $ticket): ?>
                 <li class="list-group-item"> <?php echo ucfirst($type); ?>: <?php echo $ticket['count']; ?> x <?php echo $ticket['price']; ?> €</li>
@@ -205,10 +213,17 @@ while ($row = $seats_result->fetch_assoc()) {
             checkbox.addEventListener('change', function () {
                 let seatLabel = this.parentElement;
                 if (this.checked) {
+                    const currentlySelected = document.querySelectorAll('.seat-checkbox:checked').length;
+                    if (currentlySelected > maxSelectableSeats) {
+                        this.checked = false;
+                        alert(`⚠️ You can only select ${maxSelectableSeats} seat${maxSelectableSeats > 1 ? 's' : ''}.`);
+                        return;
+                    }
                     seatLabel.classList.add('selected');
                 } else {
                     seatLabel.classList.remove('selected');
                 }
+
 
                 // Aktualizacja ukrytych pól
                 updateHiddenFields();
@@ -239,21 +254,28 @@ while ($row = $seats_result->fetch_assoc()) {
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const timerElement = document.getElementById('timer');
-        const timerBox = document.getElementById('timerBox');
-
-        // Czas rozpoczęcia z PHP
         const startTime = <?php echo $_SESSION['reservation_timer_start']; ?>;
-        const duration = 15 * 60 * 1000; // 15 minut w milisekundach
+        const duration = 15 * 60 * 1000; // 15 minut w ms
+
+        let expired = false;
 
         function updateTimer() {
+            if (expired) return; // już się skończyło, nie rób nic
+
             const now = Date.now();
             const elapsed = now - (startTime * 1000);
             const remaining = duration - elapsed;
 
             if (remaining <= 0) {
+                expired = true;
+                clearInterval(timerInterval); // zatrzymaj licznik
                 timerElement.innerText = "00:00";
-                alert("Your reservation has expired. Please start over.");
-                window.location.href = "index.php"; // lub dowolna strona startowa
+
+                // Pokaż tylko raz alert
+                setTimeout(() => {
+                    alert("⏰ Your reservation time has expired. You will be redirected.");
+                    window.location.href = "reset_timer.php";
+                }, 100); // lekkie opóźnienie pozwala DOM się uspokoić
             } else {
                 const minutes = Math.floor(remaining / 60000);
                 const seconds = Math.floor((remaining % 60000) / 1000);
@@ -261,12 +283,14 @@ while ($row = $seats_result->fetch_assoc()) {
             }
         }
 
-        updateTimer();
-        setInterval(updateTimer, 1000); // aktualizacja co sekundę
+        updateTimer(); // uruchom natychmiast
+        const timerInterval = setInterval(updateTimer, 1000); // co sekundę
     });
 </script>
 
-
+<script>
+    const maxSelectableSeats = <?php echo (int) $_SESSION['selected_tickets']['total_tickets']; ?>;
+</script>
 
 </body>
 </html>

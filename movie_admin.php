@@ -46,25 +46,21 @@ function get_sort_icon($column, $sort_column, $sort_order) {
 }
 
 
-// Aktualizacja statusów filmów na podstawie daty
-if (isset($_GET['action']) && $_GET['action'] === 'update_status') {
-    $today = date('Y-m-d');
+// Automatyczna aktualizacja statusów filmów na podstawie daty
+$today = date('Y-m-d');
 
-    $update_sql = "UPDATE movies 
-                   SET status = CASE 
-                       WHEN coming_date <= ? AND end_date >= ? THEN 'already showing'
-                       ELSE 'soon in cinema'
-                   END";
+$update_sql = "UPDATE movies 
+           SET status = CASE 
+               WHEN coming_date <= ? AND end_date >= ? THEN 'already showing'
+               WHEN coming_date > ? THEN 'soon in cinema'
+               WHEN end_date < ? THEN 'screening ended'
+               ELSE status
+           END";
 
-    $stmt = $conn->prepare($update_sql);
-    $stmt->bind_param("ss", $today, $today);
-    $stmt->execute();
-    $stmt->close();
-
-    // Po aktualizacji - odświeżenie strony bez parametru akcji
-    header("Location: movie_admin.php?updated=1");
-    exit();
-}
+$stmt = $conn->prepare($update_sql);
+$stmt->bind_param("ssss", $today, $today, $today, $today);
+$stmt->execute();
+$stmt->close();
 
 ?>
 
@@ -88,16 +84,22 @@ if (isset($_GET['action']) && $_GET['action'] === 'update_status') {
 </nav>
 
 <!-- Main Content -->
+
+
 <div class="container mt-4">
+    <!-- Wyszukiwanie filmów -->
+    <div class="mb-3">
+        <input type="text" id="searchMoviesInput" class="form-control" placeholder="Search movies by title or author...">
+    </div>
+
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="text-center">Movie List</h2>
-        <a href="?action=update_status" class="btn btn-outline-success">Movie Aktualization</a>
         <a href="add_movie.php" class="btn btn-primary">Add New Movie</a>
     </div>
 
     <div class="table-responsive">
-        <table class="table table-hover table-striped table-bordered align-middle text-center">
-            <thead class="table-dark">
+        <table class="table table-hover table-striped table-bordered align-middle text-center" id="moviesTable">
+        <thead class="table-dark">
             <tr>
                 <th><a href="?sort=name&order=<?php echo $sort_order === 'ASC' ? 'desc' : 'asc'; ?>" class="text-light">Name <?php echo get_sort_icon('name', $sort_column, $sort_order); ?></a></th>
                 <th>Description</th>
@@ -118,8 +120,15 @@ if (isset($_GET['action']) && $_GET['action'] === 'update_status') {
             <?php while ($row = $movies->fetch_assoc()): ?>
                 <tr>
                     <td><?php echo htmlspecialchars($row['name']); ?></td>
-                    <td><?php echo htmlspecialchars($row['description']); ?></td>
-                    <td><?php echo htmlspecialchars($row['stars']); ?></td>
+                    <td>
+                        <div class="description-wrapper">
+                            <span class="short-text"><?php echo htmlspecialchars(mb_strimwidth($row['description'], 0, 100, "...")); ?></span>
+                            <span class="full-text d-none"><?php echo htmlspecialchars($row['description']); ?></span>
+                            <a href="#" class="toggle-description text-primary" style="display:block; font-size: 0.9rem;">Show more</a>
+                        </div>
+                    </td>
+
+                    <td><?php echo (int)$row['stars'] . ' ⭐'; ?></td>
                     <td><?php echo htmlspecialchars($row['author']); ?></td>
                     <td>
                         <div class="d-flex flex-wrap justify-content-center">
@@ -152,7 +161,20 @@ if (isset($_GET['action']) && $_GET['action'] === 'update_status') {
                     <td><a href="<?php echo $row['video']; ?>" class="btn btn-sm btn-outline-primary" target="_blank">Watch</a></td>
                     <td><?php echo $row['movie_duration']; ?> min</td>
                     <td><?php echo $row['plays']; ?></td>
-                    <td><?php echo htmlspecialchars($row['status']); ?></td>
+                    <td>
+                        <?php
+                        $statusClass = '';
+                        switch ($row['status']) {
+                            case 'already showing': $statusClass = 'status-showing'; break;
+                            case 'soon in cinema': $statusClass = 'status-soon'; break;
+                            case 'screening ended': $statusClass = 'status-ended'; break;
+                        }
+                        ?>
+                        <span class="badge status-badge <?= $statusClass ?>">
+        <?= htmlspecialchars($row['status']) ?>
+    </span>
+                    </td>
+
                     <td><?php echo $row['coming_date']; ?></td>
                     <td><?php echo $row['end_date']; ?></td>
                     <td>
@@ -167,6 +189,72 @@ if (isset($_GET['action']) && $_GET['action'] === 'update_status') {
         </table>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".toggle-description").forEach(function (btn) {
+            btn.addEventListener("click", function (e) {
+                e.preventDefault();
+                const wrapper = this.closest(".description-wrapper");
+                const shortText = wrapper.querySelector(".short-text");
+                const fullText = wrapper.querySelector(".full-text");
+
+                if (fullText.classList.contains("d-none")) {
+                    shortText.classList.add("d-none");
+                    fullText.classList.remove("d-none");
+                    this.textContent = "Show less";
+                } else {
+                    shortText.classList.remove("d-none");
+                    fullText.classList.add("d-none");
+                    this.textContent = "Show more";
+                }
+            });
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Opis toggle
+        document.querySelectorAll(".toggle-description").forEach(function (btn) {
+            btn.addEventListener("click", function (e) {
+                e.preventDefault();
+                const wrapper = this.closest(".description-wrapper");
+                const shortText = wrapper.querySelector(".short-text");
+                const fullText = wrapper.querySelector(".full-text");
+
+                if (fullText.classList.contains("d-none")) {
+                    shortText.classList.add("d-none");
+                    fullText.classList.remove("d-none");
+                    this.textContent = "Show less";
+                } else {
+                    shortText.classList.remove("d-none");
+                    fullText.classList.add("d-none");
+                    this.textContent = "Show more";
+                }
+            });
+        });
+
+        // 🔍 Filtrowanie filmów
+        const input = document.getElementById("searchMoviesInput");
+        input.addEventListener("keyup", function () {
+            const filter = input.value.toLowerCase();
+            const rows = document.querySelectorAll("#moviesTable tbody tr");
+
+            rows.forEach(row => {
+                const title = row.cells[0].innerText.toLowerCase();    // Name
+                const author = row.cells[3].innerText.toLowerCase();   // Author
+
+                if (title.includes(filter) || author.includes(filter)) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        });
+    });
+</script>
+
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

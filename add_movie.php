@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         echo "<div class='alert alert-success text-center'>New movie added with ID: $movie_id</div>";
 
         // Tworzenie folderu dla filmu
-        $movie_folder = "Movies/$movie_id";
+        $movie_folder = "movies/$movie_id";
         if (!file_exists($movie_folder) && !mkdir($movie_folder, 0777, true)) {
             echo "<div class='alert alert-danger text-center'>Error: Failed to create movie folder!</div>";
         }
@@ -50,11 +50,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             echo "<div class='alert alert-info text-center'>Processing multiple images...</div>";
             foreach ($_FILES['images']['name'] as $index => $filename) {
                 if ($_FILES['images']['error'][$index] == 0) {
-                    $file_name = "$movie_id-" . preg_replace("/[^a-zA-Z0-9\-_\.]/", "_", basename($filename)); // Usuwanie znaków specjalnych
+                    $file_name = "$movie_id-" . preg_replace("/[^a-zA-Z0-9\-_\.]/", "_", basename($filename));
                     $destination = "$movie_folder/$file_name";
 
                     if (move_uploaded_file($_FILES['images']['tmp_name'][$index], $destination)) {
-                        $image_path = "Movies/$movie_id/$file_name";
+                        $image_path = "movies/$movie_id/$file_name";
                         $escaped_image_path = $conn->real_escape_string($image_path); // Zabezpieczenie wartości SQL
 
                         $sql_image = "INSERT INTO movie_images (movie_id, image_path) VALUES ('$movie_id', '$escaped_image_path')";
@@ -196,13 +196,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                     <div class="mb-3">
                         <label for="images" class="form-label">Movie Images:</label>
-                        <input type="file" class="form-control" name="images[]" multiple>
+                        <input type="file" class="form-control" name="images[]" accept="image/*" multiple>
                         <small class="text-muted">You can upload multiple images.</small>
                     </div>
 
                     <div class="mb-3">
-                        <label for="video" class="form-label">Video (MP4):</label>
-                        <input type="file" class="form-control" name="video" accept=".mp4" required>
+                        <label for="video" class="form-label">Video:</label>
+                        <input type="file" class="form-control" name="video" accept="video/*" required>
                     </div>
 
 

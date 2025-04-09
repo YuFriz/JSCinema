@@ -73,84 +73,108 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JSCinema</title>
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="style.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
-<body>
+<body class="reg_log">
 
 <!-- 🔹 Nawigacja -->
+
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
         <a class="navbar-brand" href="index.php">JSCinema</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="aboutCinema.php">About</a></li>
+                <li class="nav-item"><a class="nav-link" href="repertoires.php">Repertoires</a></li>
+                <li class="nav-item"><a class="nav-link" href="movies.php">Movies</a></li>
+                <li class="nav-item">
+                    <form class="d-flex position-relative">
+                        <input class="form-control" id="myInput" type="text" placeholder="Search movies..." autocomplete="off">
+                        <button class="btn btn-outline-light" type="submit">Search</button>
+                        <div id="search-results" class="position-absolute w-100 bg-white shadow rounded"></div>
+                    </form>
+                </li>
+            </ul>
+        </div>
     </div>
 </nav>
 
-<!-- 🔹 Kontener formularzy -->
+
+
 <div class="container my-5">
     <div class="row justify-content-center">
-        <div class="col-md-6">
-            <!-- 🔹 Karta rejestracji -->
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white text-center">
-                    <h4>Register</h4>
-                </div>
-                <div class="card-body">
-                    <form method="POST" action="register_login.php">
-                        <label for="email">E-mail:</label>
-                        <input type="email" id="email" name="email" class="form-control mb-3" required>
-
-                        <label for="imie">Name:</label>
-                        <input type="text" id="imie" name="imie" class="form-control mb-3" required>
-
-                        <label for="nazwisko">Surname:</label>
-                        <input type="text" id="nazwisko" name="nazwisko" class="form-control mb-3" required>
-
-                        <label for="password">Password:</label>
-                        <input type="password" id="password" name="password" class="form-control mb-3" required>
-
-                        <label for="data_urodzenia">Birthdate:</label>
-                        <input type="date" id="data_urodzenia" name="data_urodzenia" class="form-control mb-3" required>
-
-                        <button type="submit" name="register" class="btn btn-primary w-100">Register</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6">
-            <!-- 🔹 Karta logowania -->
-            <div class="card shadow">
-                <div class="card-header bg-success text-white text-center">
-                    <h4>Log in</h4>
-                </div>
-                <div class="card-body">
-                    <form method="POST" action="register_login.php">
-                        <label for="email_login">E-mail:</label>
-                        <input type="email" id="email_login" name="email_login" class="form-control mb-3" required>
-
-                        <label for="password_login">Password:</label>
-                        <input type="password" id="password_login" name="password_login" class="form-control mb-3" required>
-
-                        <button type="submit" name="login" class="btn btn-success w-100">Log in</button>
-                    </form>
-                </div>
+        <div class="col-md-8">
+            <div class="welcomeRegLog-card text-center p-4 shadow-sm">
+                <h2>Welcome to JSCinema</h2>
+                <p class="lead mb-0">Create an account or log in to get exclusive discounts on movie tickets!</p>
             </div>
         </div>
     </div>
+</div>
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="auth-card text-center p-4 shadow">
+                <div class="toggle-buttons d-flex justify-content-center mb-4">
+                    <button id="loginToggle" class="btn-toggle active">Login</button>
+                    <button id="registerToggle" class="btn-toggle">Signup</button>
+                </div>
+
+                <!-- Login form -->
+                <form id="loginForm" method="POST" action="register_login.php">
+                    <input type="email" name="email_login" placeholder="Email Address" class="form-control mb-3" required>
+                    <input type="password" name="password_login" placeholder="Password" class="form-control mb-3" required>
+                    <div class="text-start mb-3">
+                    </div>
+                    <button type="submit" name="login" class="btn gradient-btn w-100">Login</button>
+                </form>
+
+                <!-- Register form -->
+                <form id="registerForm" method="POST" action="register_login.php" class="d-none">
+                    <input type="email" name="email" placeholder="Email Address" class="form-control mb-3" required>
+                    <input type="text" name="imie" placeholder="Name" class="form-control mb-3" required>
+                    <input type="text" name="nazwisko" placeholder="Surname" class="form-control mb-3" required>
+                    <input type="password" name="password" placeholder="Password" class="form-control mb-3" required>
+                    <input type="date" name="data_urodzenia" class="form-control mb-3" required>
+                    <button type="submit" name="register" class="btn gradient-btn w-100">Register</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
 
     <!-- 🔹 Wiadomość o błędzie -->
     <?php if (!empty($message)): ?>
         <div class="alert alert-warning text-center mt-4"><?php echo $message; ?></div>
     <?php endif; ?>
-</div>
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    document.getElementById("loginToggle").addEventListener("click", function () {
+        this.classList.add("active");
+        document.getElementById("registerToggle").classList.remove("active");
+        document.getElementById("loginForm").classList.remove("d-none");
+        document.getElementById("registerForm").classList.add("d-none");
+    });
+
+    document.getElementById("registerToggle").addEventListener("click", function () {
+        this.classList.add("active");
+        document.getElementById("loginToggle").classList.remove("active");
+        document.getElementById("registerForm").classList.remove("d-none");
+        document.getElementById("loginForm").classList.add("d-none");
+    });
+
+</script>
 
 </body>
 </html>

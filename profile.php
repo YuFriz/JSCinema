@@ -125,7 +125,9 @@ $profileImage = !empty($user['profile_image']) ? "uploads/" . htmlspecialchars($
         </div>
 
         <!-- 🔹 Przycisk wylogowania -->
-        <a href="logout.php" class="btn btn-danger mt-3">Log Out</a>
+        <a href="logout.php" class="btn profile-logout mt-3">
+            <i class="fa-solid fa-right-from-bracket me-2"></i>Log Out
+        </a>
     </div>
 </div>
 

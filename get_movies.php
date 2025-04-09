@@ -1,10 +1,9 @@
 <?php
+require "db_connection.php";
 if (isset($_GET['date'])) {
     $date = $_GET['date'];
     $genre = isset($_GET['genre']) && $_GET['genre'] !== '' ? $_GET['genre'] : null;
     $movieId = isset($_GET['movie_id']) && $_GET['movie_id'] !== '' ? (int) $_GET['movie_id'] : null;
-
-    $conn = new mysqli("localhost", "root", "", "cinemajs");
 
     if ($conn->connect_error) {
         die("Połączenie nieudane: " . $conn->connect_error);

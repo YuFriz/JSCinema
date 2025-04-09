@@ -2,7 +2,6 @@
 require 'db_connection.php';
 require 'session_manager.php';
 
-
 // Sprawdzenie uprawnień administratora
 $user_id = $_SESSION['user_id'];
 $sql = "SELECT Status FROM users WHERE id = ?";
@@ -17,29 +16,21 @@ if (!$user || $user['Status'] !== 'admin') {
 }
 $stmt->close();
 
-
-
-// Sprawdzenie ID filmu
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     die("Invalid movie ID!");
 }
-
 $movie_id = intval($_GET['id']);
 
-// Pobranie szczegółów filmu
 $stmt = $conn->prepare("SELECT * FROM movies WHERE id = ?");
 $stmt->bind_param("i", $movie_id);
 $stmt->execute();
 $result = $stmt->get_result();
-
 if ($result->num_rows === 0) {
     die("Movie not found!");
 }
-
 $movie = $result->fetch_assoc();
 $stmt->close();
 
-// Pobranie obrazów powiązanych z filmem
 $image_stmt = $conn->prepare("SELECT id, image_path FROM movie_images WHERE movie_id = ?");
 $image_stmt->bind_param("i", $movie_id);
 $image_stmt->execute();
@@ -47,7 +38,6 @@ $image_result = $image_stmt->get_result();
 $images = $image_result->fetch_all(MYSQLI_ASSOC);
 $image_stmt->close();
 
-// Pobranie gatunków przypisanych do filmu
 $genre_stmt = $conn->prepare("SELECT genre_id FROM movie_genres WHERE movie_id = ?");
 $genre_stmt->bind_param("i", $movie_id);
 $genre_stmt->execute();
@@ -58,32 +48,34 @@ while ($row = $genre_result->fetch_assoc()) {
 }
 $genre_stmt->close();
 
-// Pobranie listy wszystkich gatunków
 $genreSql = "SELECT * FROM genres";
 $genreResult = $conn->query($genreSql);
 
-
-
-
-// Obsługa edycji filmu
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = $_POST['name'];
     $description = $_POST['description'];
     $stars = $_POST['stars'];
     $author = $_POST['author'];
-    $video = $_POST['video'];
     $movie_duration = intval($_POST['movie_duration']);
     $plays = $_POST['plays'];
-    $status = $_POST['status'];
     $coming_date = $_POST['coming_date'];
     $end_date = $_POST['end_date'];
     $genres = isset($_POST['genre']) ? $_POST['genre'] : [];
 
-    // Aktualizacja informacji o filmie
+    $today = date('Y-m-d');
+    if ($coming_date > $today) {
+        $status = 'soon in cinema';
+    } elseif ($coming_date <= $today && $end_date >= $today) {
+        $status = 'already showing';
+    } elseif ($end_date < $today) {
+        $status = 'screening ended';
+    } else {
+        $status = 'unknown';
+    }
+
     $update_stmt = $conn->prepare("UPDATE movies SET name = ?, description = ?, stars = ?, author = ?, video = ?, movie_duration = ?, plays = ?, status = ?, coming_date = ?, end_date = ? WHERE id = ?");
     $update_stmt->bind_param("sssssissssi", $name, $description, $stars, $author, $video, $movie_duration, $plays, $status, $coming_date, $end_date, $movie_id);
 
-    // Aktualizacja gatunków
     $conn->query("DELETE FROM movie_genres WHERE movie_id = $movie_id");
     foreach ($genres as $genre_id) {
         $conn->query("INSERT INTO movie_genres (movie_id, genre_id) VALUES ($movie_id, $genre_id)");
@@ -96,25 +88,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     $update_stmt->close();
 
-    // Obsługa przesyłania nowych obrazów
     if (!empty($_FILES['images']['name'][0])) {
         foreach ($_FILES['images']['name'] as $index => $filename) {
             if ($_FILES['images']['error'][$index] == 0) {
                 $file_name = "$movie_id-" . basename($filename);
-                $destination = "Movies/$movie_id/$file_name";
+                $destination = "movies/$movie_id/$file_name";
 
                 if (move_uploaded_file($_FILES['images']['tmp_name'][$index], $destination)) {
-                    $image_path = "Movies/$movie_id/$file_name";
+                    $image_path = "movies/$movie_id/$file_name";
                     $sql_image = "INSERT INTO movie_images (movie_id, image_path) VALUES ('$movie_id', '$image_path')";
                     $conn->query($sql_image);
                 }
             }
         }
     }
-}
 
+    if (!empty($_FILES['video']['name'])) {
+        $videoName = basename($_FILES['video']['name']);
+        $videoPath = "movies/$movie_id/" . $videoName;
+
+        if (!is_dir("movies/$movie_id")) {
+            mkdir("movies/$movie_id", 0777, true);
+        }
+
+        if (move_uploaded_file($_FILES['video']['tmp_name'], $videoPath)) {
+            $updateVideoStmt = $conn->prepare("UPDATE movies SET video = ? WHERE id = ?");
+            $updateVideoStmt->bind_param("si", $videoPath, $movie_id);
+            $updateVideoStmt->execute();
+            $updateVideoStmt->close();
+        }
+    }
+}
 $conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -134,95 +141,120 @@ $conn->close();
         <a href="movie_admin.php" class="btn btn-outline-light">Back to Movie List</a>
     </div>
 </nav>
-
-<!-- Edit Movie Form -->
 <div class="container mt-4">
-    <h2 class="text-center">Edit Movie</h2>
-    <form method="POST" class="mt-3" enctype="multipart/form-data">
-        <div class="mb-3">
-            <label for="name" class="form-label">Movie Name:</label>
-            <input type="text" id="name" name="name" class="form-control" value="<?php echo htmlspecialchars($movie['name']); ?>" required>
-        </div>
+    <h2 class="text-center mb-4">🎬 Edit Movie</h2>
 
-        <div class="mb-3">
-            <label for="description" class="form-label">Description:</label>
-            <textarea id="description" name="description" class="form-control" required><?php echo htmlspecialchars($movie['description']); ?></textarea>
-        </div>
+    <form method="POST" enctype="multipart/form-data">
+        <div class="row g-4">
 
-        <div class="mb-3">
-            <label for="stars" class="form-label">Stars:</label>
-            <input type="text" id="stars" name="stars" class="form-control" value="<?php echo htmlspecialchars($movie['stars']); ?>" required>
-        </div>
+            <!-- Left Column -->
+            <div class="col-md-6">
+                <div class="card-edit-movie-admin p-4 shadow-sm">
+                    <h5 class="mb-3">📄 Basic Info</h5>
 
-        <div class="mb-3">
-            <label for="author" class="form-label">Author:</label>
-            <input type="text" id="author" name="author" class="form-control" value="<?php echo htmlspecialchars($movie['author']); ?>" required>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Current Images:</label>
-            <div class="d-flex flex-wrap">
-                <?php foreach ($images as $img): ?>
-                    <div class="m-2">
-                        <img src="<?php echo $img['image_path']; ?>" class="img-thumbnail" width="150">
-                        <br>
-                        <a href="delete_image.php?id=<?php echo $img['id']; ?>&movie_id=<?php echo $movie_id; ?>" class="btn btn-sm btn-danger mt-1">Delete</a>
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Movie Name:</label>
+                        <input type="text" id="name" name="name" class="form-control" value="<?= htmlspecialchars($movie['name']) ?>" required>
                     </div>
-                <?php endforeach; ?>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description:</label>
+                        <textarea id="description" name="description" class="form-control" rows="5" required><?= htmlspecialchars($movie['description']) ?></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="stars" class="form-label">Stars:</label>
+                        <input type="text" id="stars" name="stars" class="form-control" value="<?= htmlspecialchars($movie['stars']) ?>" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="author" class="form-label">Author:</label>
+                        <input type="text" id="author" name="author" class="form-control" value="<?= htmlspecialchars($movie['author']) ?>" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="plays" class="form-label">Cast:</label>
+                        <input type="text" id="plays" name="plays" class="form-control" value="<?= htmlspecialchars($movie['plays']) ?>" required>
+                    </div>
+
+                    <div class="row">
+                        <div class="col">
+                            <label for="coming_date" class="form-label">Coming Date:</label>
+                            <input type="date" id="coming_date" name="coming_date" class="form-control" value="<?= $movie['coming_date'] ?>">
+                        </div>
+                        <div class="col">
+                            <label for="end_date" class="form-label">End Date:</label>
+                            <input type="date" id="end_date" name="end_date" class="form-control" value="<?= $movie['end_date'] ?>">
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <label for="movie_duration" class="form-label">Duration (minutes):</label>
+                        <input type="number" id="movie_duration" name="movie_duration" class="form-control" value="<?= $movie['movie_duration'] ?>" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="col-md-6">
+                <!-- Images -->
+                <div class="card-edit-movie-admin p-4 shadow-sm mb-4">
+                    <h5 class="mb-3">🖼️ Images</h5>
+                    <div class="d-flex flex-wrap">
+                        <?php foreach ($images as $img): ?>
+                            <div class="position-relative me-2 mb-2">
+                                <img src="<?= $img['image_path'] ?>" class="img-thumbnail" width="120">
+                                <a href="delete_image.php?id=<?= $img['id'] ?>&movie_id=<?= $movie_id ?>" class="btn btn-sm delete-btn-movieEdit position-absolute top-0 end-0 m-1">x</a>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+
+                    <div class="mt-3">
+                        <label for="images" class="form-label">Upload New Images:</label>
+                        <input type="file" class="form-control" name="images[]" multiple>
+                    </div>
+                </div>
+
+                <!-- Video -->
+                <div class="card-edit-movie-admin p-4 shadow-sm mb-4">
+                    <h5 class="mb-3">🎥 Video</h5>
+                    <?php if (!empty($movie['video'])): ?>
+                        <video width="100%" height="240" controls class="mb-2 rounded shadow-sm">
+                            <source src="<?= htmlspecialchars($movie['video']) ?>" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <div>
+                            <a href="delete_video.php?id=<?= $movie_id ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this video?');">Delete Video</a>
+                        </div>
+                    <?php else: ?>
+                        <p class="text-muted">No video uploaded.</p>
+                    <?php endif; ?>
+
+                    <div class="mt-3">
+                        <label for="video" class="form-label">Upload New Video (MP4):</label>
+                        <input type="file" class="form-control" name="video" accept=".mp4">
+                    </div>
+                </div>
+
+                <!-- Genres -->
+                <div class="card-edit-movie-admin p-4 shadow-sm">
+                    <h5 class="mb-3">🎭 Genres</h5>
+                    <select class="form-select select2" name="genre[]" multiple required>
+                        <?php while ($genre = $genreResult->fetch_assoc()): ?>
+                            <option value="<?= $genre['id'] ?>" <?= in_array($genre['id'], $selected_genres) ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($genre['name']) ?>
+                            </option>
+                        <?php endwhile; ?>
+                    </select>
+                    <small class="text-muted">Hold Ctrl (Windows) / Cmd (Mac) to select multiple</small>
+                </div>
             </div>
         </div>
 
-        <div class="mb-3">
-            <label for="images" class="form-label">Upload New Images:</label>
-            <input type="file" class="form-control" name="images[]" multiple>
+        <!-- Submit -->
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-success btn-lg px-4">💾 Update Movie</button>
         </div>
-
-        <div class="mb-3">
-            <label for="video" class="form-label">Video URL:</label>
-            <input type="text" id="video" name="video" class="form-control" value="<?php echo $movie['video']; ?>">
-        </div>
-
-        <div class="mb-3">
-            <label for="genre" class="form-label">Genres:</label>
-            <select class="form-select select2" name="genre[]" multiple required>
-                <?php while ($genre = $genreResult->fetch_assoc()): ?>
-                    <option value="<?php echo $genre['id']; ?>" <?php echo in_array($genre['id'], $selected_genres) ? 'selected' : ''; ?>>
-                        <?php echo htmlspecialchars($genre['name']); ?>
-                    </option>
-                <?php endwhile; ?>
-            </select>
-            <small class="text-muted">Hold Ctrl (Windows) / Command (Mac) to select multiple genres.</small>
-        </div>
-
-        <div class="mb-3">
-            <label for="movie_duration" class="form-label">Movie Duration (minutes):</label>
-            <input type="number" id="movie_duration" name="movie_duration" class="form-control" value="<?php echo $movie['movie_duration']; ?>" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="plays" class="form-label">Cast:</label>
-            <input type="text" id="plays" name="plays" class="form-control" value="<?php echo htmlspecialchars($movie['plays']); ?>" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="status" class="form-label">Status:</label>
-            <select class="form-select" name="status">
-                <option value="already showing" <?php echo ($movie['status'] == 'already showing') ? 'selected' : ''; ?>>Already showing</option>
-                <option value="soon in cinema" <?php echo ($movie['status'] == 'soon in cinema') ? 'selected' : ''; ?>>Soon in cinema</option>
-            </select>
-        </div>
-
-        <div class="mb-3">
-            <label for="coming_date" class="form-label">Coming Date:</label>
-            <input type="date" id="coming_date" name="coming_date" class="form-control" value="<?php echo $movie['coming_date']; ?>">
-        </div>
-
-        <div class="mb-3">
-            <label for="end_date" class="form-label">End Date:</label>
-            <input type="date" id="end_date" name="end_date" class="form-control" value="<?php echo $movie['end_date']; ?>">
-        </div>
-
-        <button type="submit" class="btn btn-success">Update Movie</button>
     </form>
 </div>
 

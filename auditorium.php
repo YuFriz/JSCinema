@@ -77,10 +77,10 @@ $screenings = $screenings_query->get_result();
     <div class="row">
         <?php while ($row = $screenings->fetch_assoc()): ?>
             <div class="col-md-4 mb-3">
-                <div class="card border-0 shadow-lg">
+                <div class="card auditorium-card border-0 shadow-lg">
                     <div class="card-body text-center">
                         <h5 class="card-title fw-bold"><?php echo htmlspecialchars($row['movie_name']); ?></h5>
-                        <p class="card-text text-muted">
+                        <p class="card-text">
                             <strong>Date:</strong> <?php echo $row['screening_date']; ?><br>
                             <strong>Time:</strong> <?php echo $row['start_time']; ?>
                         </p>

@@ -91,7 +91,7 @@ $users_query = $conn->query("SELECT id, imie, nazwisko, email, Status FROM users
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Funkcja do filtrowania użytkowników w tabeli
+
     document.getElementById("searchInput").addEventListener("keyup", function() {
         let filter = this.value.toLowerCase();
         let rows = document.querySelectorAll("#usersTable tbody tr");

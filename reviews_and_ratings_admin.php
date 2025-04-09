@@ -33,6 +33,7 @@ $result = $conn->query($sql);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reviews and Ratings</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -45,45 +46,59 @@ $result = $conn->query($sql);
 </nav>
 
 <div class="container mt-5">
-    <h2 class="mb-4">Reviews and Ratings</h2>
-    <table class="table table-bordered table-striped">
-        <thead class="thead-dark">
-        <tr>
-            <th>ID</th>
-            <th>User</th>
-            <th>Movie</th>
-            <th>Review</th>
-            <th>Stars</th>
-            <th>Actions</th> <!-- NOWE -->
-        </tr>
-        </thead>
-        <tbody>
-        <?php if ($result->num_rows > 0): ?>
-            <?php while ($row = $result->fetch_assoc()): ?>
+    <div class="card card-review-admin shadow p-4 rounded-4">
+        <h3 class="text-center mb-4">📝 Reviews and Ratings</h3>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover table-review-admin text-center align-middle">
+            <thead class="table-dark">
                 <tr>
-                    <td><?php echo htmlspecialchars($row['id']); ?></td>
-                    <td><?php echo htmlspecialchars($row['imie'] . ' ' . $row['nazwisko']); ?></td>
-                    <td><?php echo htmlspecialchars($row['movie_name']); ?></td>
-                    <td><?php echo nl2br(htmlspecialchars($row['review'])); ?></td>
-                    <td>
-                        <?php for ($i = 0; $i < $row['star']; $i++): ?>
-                            ⭐
-                        <?php endfor; ?>
-                    </td>
-                    <td>
-                        <a href="edit_review_admin.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-warning">Edit</a>
-                        <a href="delete_review_admin.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this review?');">Delete</a>
-                    </td>
+                    <th>#</th>
+                    <th>User</th>
+                    <th>Movie</th>
+                    <th>Review</th>
+                    <th>Stars</th>
+                    <th>Actions</th>
                 </tr>
-            <?php endwhile; ?>
-        <?php else: ?>
-            <tr>
-                <td colspan="6" class="text-center">No reviews available</td>
-            </tr>
-        <?php endif; ?>
-        </tbody>
-    </table>
+                </thead>
+                <tbody>
+                <?php if ($result->num_rows > 0): ?>
+                    <?php while ($row = $result->fetch_assoc()): ?>
+                        <tr>
+                            <td class="fw-bold text-muted"><?= $row['id'] ?></td>
+                            <td><?= htmlspecialchars($row['imie'] . ' ' . $row['nazwisko']); ?></td>
+                            <td><span class="badge badge-review-admin"><?= htmlspecialchars($row['movie_name']); ?></span></td>
+                            <td class="text-start"><?= nl2br(htmlspecialchars($row['review'])); ?></td>
+                            <td>
+                                <?php for ($i = 0; $i < $row['star']; $i++): ?>
+                                    <span class="text-warning">⭐</span>
+                                <?php endfor; ?>
+                            </td>
+                            <td>
+                                <div class="d-flex justify-content-center">
+                                    <a href="edit_review_admin.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-warning mr-2">
+                                        ✏️ Edit
+                                    </a>
+                                    <a href="delete_review_admin.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this review?');">
+                                        ❌ Delete
+                                    </a>
+                                </div>
+                            </td>
+
+                        </tr>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">No reviews available</td>
+                    </tr>
+                <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
+
+
 </body>
 </html>
 <?php

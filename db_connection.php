@@ -1,8 +1,9 @@
 <?php
 $host = 'localhost';
 $dbname = 'cinemajs';
-$username = 'root';
-$password = '';
+$username = 'cinema_user';
+$password = 'abc';
+
 
 $conn = new mysqli($host, $username, $password, $dbname);
 

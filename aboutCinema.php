@@ -37,13 +37,20 @@ require 'session_manager.php';
                         <div id="search-results" class="position-absolute w-100 bg-white shadow rounded"></div>
                     </form>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item d-flex align-items-center ms-2">
                     <?php if (isset($_SESSION['user_id'])): ?>
-                        <a class="nav-link d-flex align-items-center justify-content-center border rounded p-2 ms-2" href="profile.php" title="Profile" style="width: 42px; height: 42px;">
-                            <i class="bi bi-person-circle fs-4"></i>
-                        </a>
+                        <div class="d-flex align-items-center gap-2">
+                            <a class="nav-link d-flex align-items-center justify-content-center border rounded p-2"
+                               href="profile.php" title="Profile" style="width: 42px; height: 42px;">
+                                <i class="bi bi-person-circle fs-4"></i>
+                            </a>
+                            <form action="logout.php" method="post">
+                                <button type="submit" class="btn btn-outline-danger btn-sm">Logout</button>
+                            </form>
+                        </div>
                     <?php else: ?>
-                        <a class="nav-link d-flex align-items-center justify-content-center border rounded p-2 ms-2" href="register_login.php" title="Login/Register" style="width: 42px; height: 42px;">
+                        <a class="nav-link d-flex align-items-center justify-content-center border rounded p-2 ms-2"
+                           href="register_login.php" title="Login/Register" style="width: 42px; height: 42px;">
                             <i class="bi bi-box-arrow-in-right fs-4"></i>
                         </a>
                     <?php endif; ?>

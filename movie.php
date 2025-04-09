@@ -104,7 +104,15 @@ $reviews = $reviewStmt->get_result();
     <div class="container mt-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h2><?= htmlspecialchars($movie['name'] ?? 'Unknown Movie') ?></h2>
-            <span class="movie-rating">&#9733; <?= round($movie['stars'] ?? 0) ?>/5</span>
+            <div class="movie-rating-badge">
+                <?php
+                $stars = round($movie['stars'] ?? 0);
+                for ($i = 1; $i <= 5; $i++): ?>
+                    <i class="bi <?= $i <= $stars ? 'bi-star-fill' : 'bi-star' ?>"></i>
+                <?php endfor; ?>
+            </div>
+
+
         </div>
 
         <div class="row mt-4">
@@ -121,7 +129,7 @@ $reviews = $reviewStmt->get_result();
                     <p><strong>Director:</strong> <?= htmlspecialchars($movie['author'] ?? 'Unknown') ?></p>
                     <p><strong>Plays:</strong> <?= htmlspecialchars($movie['plays'] ?? 'Unknown') ?></p>
                 </div>
-                <a href="repertoires.php?movie_id=<?= $movieId ?>" class="btn btn-primary w-100 py-2 shadow">
+                <a href="repertoires.php?movie_id=<?= $movieId ?>" class="btn btn-session w-100 py-2 shadow">
                     <i class="bi bi-clock me-2"></i>Choose a session
                 </a>
             </div>

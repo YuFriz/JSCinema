@@ -70,8 +70,16 @@ $stmt->close();
     <meta charset="UTF-8">
     <title>Edit User</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="index.php">JSCinema</a>
+        <a href="users-admin.php" class="btn btn-outline-light">Back</a>
+    </div>
+</nav>
 
 <div class="container mt-5">
     <h2 class="mb-4">Edit User: <?php echo htmlspecialchars($user['imie'] . " " . $user['nazwisko']); ?></h2>
@@ -101,7 +109,7 @@ $stmt->close();
             <input type="password" class="form-control" id="password" name="password" placeholder="Enter new password...">
         </div>
 
-        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <button type="submit" class="btn btn-success">Save Changes</button>
         <a href="users-admin.php" class="btn btn-secondary">Cancel</a>
     </form>
 </div>

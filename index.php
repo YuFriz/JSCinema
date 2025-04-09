@@ -43,6 +43,7 @@ $sections = [
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="index">
+
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
         <a class="navbar-brand" href="index.php">JSCinema</a>
@@ -61,13 +62,20 @@ $sections = [
                         <div id="search-results" class="position-absolute w-100 bg-white shadow rounded"></div>
                     </form>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item d-flex align-items-center ms-2">
                     <?php if (isset($_SESSION['user_id'])): ?>
-                        <a class="nav-link d-flex align-items-center justify-content-center border rounded p-2 ms-2" href="profile.php" title="Profile" style="width: 42px; height: 42px;">
-                            <i class="bi bi-person-circle fs-4"></i>
-                        </a>
+                        <div class="d-flex align-items-center gap-2">
+                            <a class="nav-link d-flex align-items-center justify-content-center border rounded p-2"
+                               href="profile.php" title="Profile" style="width: 42px; height: 42px;">
+                                <i class="bi bi-person-circle fs-4"></i>
+                            </a>
+                            <form action="logout.php" method="post">
+                                <button type="submit" class="btn btn-outline-danger btn-sm">Logout</button>
+                            </form>
+                        </div>
                     <?php else: ?>
-                        <a class="nav-link d-flex align-items-center justify-content-center border rounded p-2 ms-2" href="register_login.php" title="Login/Register" style="width: 42px; height: 42px;">
+                        <a class="nav-link d-flex align-items-center justify-content-center border rounded p-2 ms-2"
+                           href="register_login.php" title="Login/Register" style="width: 42px; height: 42px;">
                             <i class="bi bi-box-arrow-in-right fs-4"></i>
                         </a>
                     <?php endif; ?>
@@ -103,13 +111,14 @@ $sections = [
                             $movies = fetchMovies($pdo, $status);
                             foreach ($movies as $movie): ?>
                                 <div class="col-md-3 movie-card flex-shrink-0">
+                                    <a href='movie.php?id=<?= $movie['id'] ?>' class='text-decoration-none text-dark'>
                                     <div class='card h-100'>
-                                        <img src='<?= htmlspecialchars($movie['image_path']) ?>' class='card-img-top' alt='<?= htmlspecialchars($movie['name']) ?>'>
-                                        <div class='card-body text-center'>
-                                            <h5 class='card-title'><?= htmlspecialchars($movie['name']) ?></h5>
-                                            <a href='movie.php?id=<?= $movie['id'] ?>' class='btn btn-primary'>View Details</a>
+                                            <img src='<?= htmlspecialchars($movie['image_path']) ?>' class='card-img-top' alt='<?= htmlspecialchars($movie['name']) ?>'>
+                                            <div class='card-body-movie text-center'>
+                                                <h5 class='card-title'><?= htmlspecialchars($movie['name']) ?></h5>
+                                            </div>
                                         </div>
-                                    </div>
+                                    </a>
                                 </div>
                             <?php endforeach; ?>
                         </div>
@@ -122,10 +131,6 @@ $sections = [
 
 
 
-
-<footer>
-    <p>&copy; JSCinema. All rights reserved.</p>
-</footer>
 
 
 <!--SEARCH-->

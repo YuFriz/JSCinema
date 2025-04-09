@@ -62,7 +62,7 @@ if (!empty($movie['video']) && file_exists($movie['video'])) {
 }
 
 // Usunięcie folderu filmu
-$movie_folder = "Movies/$movie_id";
+$movie_folder = "movies/$movie_id";
 if (is_dir($movie_folder)) {
     array_map('unlink', glob("$movie_folder/*.*")); // Usuwa wszystkie pliki w folderze
     rmdir($movie_folder); // Usuwa folder

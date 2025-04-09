@@ -235,5 +235,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 </script>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const dateInput = document.getElementById("screening_date");
+
+        dateInput.addEventListener("click", function () {
+            this.showPicker?.(); // nowoczesne przeglądarki (np. Chrome)
+        });
+    });
+</script>
+
+
 </body>
 </html>
