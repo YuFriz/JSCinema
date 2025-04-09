@@ -68,7 +68,14 @@ $result = $conn->query($sql);
                             <td class="fw-bold text-muted"><?= $row['id'] ?></td>
                             <td><?= htmlspecialchars($row['imie'] . ' ' . $row['nazwisko']); ?></td>
                             <td><span class="badge badge-review-admin"><?= htmlspecialchars($row['movie_name']); ?></span></td>
-                            <td class="text-start"><?= nl2br(htmlspecialchars($row['review'])); ?></td>
+                            <td class="text-start">
+                                <div class="description-wrapper">
+                                    <span class="short-text"><?= nl2br(htmlspecialchars(mb_strimwidth($row['review'], 0, 150, "..."))); ?></span>
+                                    <span class="full-text d-none"><?= nl2br(htmlspecialchars($row['review'])); ?></span>
+                                    <a href="#" class="toggle-description text-primary" style="display:block; font-size: 0.9rem;">Show more</a>
+                                </div>
+                            </td>
+
                             <td>
                                 <?php for ($i = 0; $i < $row['star']; $i++): ?>
                                     <span class="text-warning">⭐</span>
@@ -97,6 +104,31 @@ $result = $conn->query($sql);
         </div>
     </div>
 </div>
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".toggle-description").forEach(function (btn) {
+            btn.addEventListener("click", function (e) {
+                e.preventDefault();
+                const wrapper = this.closest(".description-wrapper");
+                const shortText = wrapper.querySelector(".short-text");
+                const fullText = wrapper.querySelector(".full-text");
+
+                if (fullText.classList.contains("d-none")) {
+                    shortText.classList.add("d-none");
+                    fullText.classList.remove("d-none");
+                    this.textContent = "Show less";
+                } else {
+                    shortText.classList.remove("d-none");
+                    fullText.classList.add("d-none");
+                    this.textContent = "Show more";
+                }
+            });
+        });
+    });
+</script>
 
 
 </body>
