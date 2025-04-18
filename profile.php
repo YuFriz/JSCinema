@@ -41,7 +41,7 @@ $profileImage = !empty($user['profile_image']) ? "uploads/" . htmlspecialchars($
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
-<body>
+<body class="profile">
 
 <!-- Nawigacja -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -91,7 +91,7 @@ $profileImage = !empty($user['profile_image']) ? "uploads/" . htmlspecialchars($
 
 
 
-        <!-- 🔹 Przyciski użytkownika -->
+        <!-- 🔹 Przyciski user/admin -->
         <div class="d-grid gap-3 col-md-8 mx-auto">
             <?php if ($user['Status'] == 'admin'): ?>
                 <a href="analysis.php" class="btn btn-secondary">
@@ -116,6 +116,9 @@ $profileImage = !empty($user['profile_image']) ? "uploads/" . htmlspecialchars($
                 </a>
                 <a href="reviews_and_ratings.php" class="btn btn-primary">
                     <i class="fa-solid fa-star-half-stroke"></i> Reviews and Ratings
+                </a>
+                <a href="my_points.php" class="btn btn-primary">
+                    <i class="fa-solid fa-star"></i> Points
                 </a>
                 <a href="settings.php" class="btn btn-outline-dark">
                     <i class="fa-solid fa-gear"></i> Settings

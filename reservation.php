@@ -19,7 +19,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['movie_id']) && isset($
         'children' => 4.5,
         'club' => 5.0,
         'youth' => 5.5,
-        'senior' => 4.0
+        'senior' => 4.0,
+        'free' => 0.00
     ];
 
     $selected_tickets = [];
@@ -90,6 +91,9 @@ $seats = [];
 while ($row = $seats_result->fetch_assoc()) {
     $seats[$row['row_number']][] = $row;
 }
+
+
+
 ?>
 
 <!DOCTYPE html>
@@ -133,76 +137,68 @@ while ($row = $seats_result->fetch_assoc()) {
     Time remaining to complete reservation: <span id="timer">15:00</span>
 </div>
 
-<div class="stepper d-flex justify-content-between align-items-center my-4 px-md-5">
-    <div class="step active">
-        <div class="circle"></div>
-        <div class="label">Tickets</div>
-    </div>
-    <div class="line active mx-2"></div>
-    <div class="step active">
-        <div class="circle"></div>
-        <div class="label">Seats</div>
-    </div>
-    <div class="line mx-2"></div>
-    <div class="step">
-        <div class="circle"></div>
-        <div class="label">Payment</div>
-    </div>
-</div>
+<div class="container mt-4">
+    <form action="reservation_process.php" method="post" id="seatForm">
+        <input type="hidden" name="movie_id" value="<?php echo $movie_id; ?>">
+        <input type="hidden" name="screening_id" value="<?php echo $screening_id; ?>">
+        <input type="hidden" name="seat_rows" id="seat_rows">
+        <input type="hidden" name="seat_numbers" id="seat_numbers">
 
-<div class="container mt-4 text-center">
-    <h3>Select Your Seats</h3>
-        <form action="reservation_process.php" method="post" id="seatForm">
-            <input type="hidden" name="movie_id" value="<?php echo $movie_id; ?>">
-            <input type="hidden" name="screening_id" value="<?php echo $screening_id; ?>">
-            <input type="hidden" name="seat_rows" id="seat_rows">
-            <input type="hidden" name="seat_numbers" id="seat_numbers">
+        <div class="row">
+            <!-- LEWA STRONA: EKRAN + KRZESŁA -->
+            <div class="col-lg-8 mb-4">
+                <h3 class="text-center">Select Your Seats</h3>
 
-
-        <div class="seating-container">
-            <?php foreach ($seats as $row_number => $row_seats): ?>
-                <div class="seat-row-container">
-                    <div class="row-label"><?php echo "Row " . htmlspecialchars($row_number); ?></div>
-                    <div class="seat-row">
-                        <?php
-                        // Sortowanie miejsc w rzędzie po numerze siedzenia
-                        usort($row_seats, function($a, $b) {
-                            return $a['seat_number'] - $b['seat_number'];
-                        });
-
-                        foreach ($row_seats as $seat): ?>
-                            <label class="seat btn btn-outline-secondary <?php echo $seat['is_taken'] ? 'taken' : ''; ?>">
-                                <input type="checkbox" name="seats[]" value="<?php echo $seat['id']; ?>" class="d-none seat-checkbox"
-                                       data-row="<?php echo htmlspecialchars($row_number); ?>"
-                                       data-seat="<?php echo htmlspecialchars($seat['seat_number']); ?>"
-                                    <?php echo $seat['is_taken'] ? 'disabled' : ''; ?>>
-                                <i class="fas fa-chair" title="Seat <?php echo htmlspecialchars($seat['seat_number']); ?>"></i>
-                            </label>
-                        <?php endforeach; ?>
+                <div class="seating-container">
+                    <div class="screen-indicator text-center mb-4">
+                        <div class="screen-box">SCREEN</div>
                     </div>
-                </div>
-            <?php endforeach; ?>
-        </div>
 
-            <div class="d-flex justify-content-center align-items-center gap-3 mt-4 legend">
-            <span class="seat d-inline-flex"><i class="fas fa-chair"></i>&nbsp;Available</span>
-                <span class="seat selected d-inline-flex"><i class="fas fa-chair"></i>&nbsp;Selected</span>
-                <span class="seat taken d-inline-flex"><i class="fas fa-chair"></i>&nbsp;Taken</span>
+                    <?php foreach ($seats as $row_number => $row_seats): ?>
+                        <div class="seat-row-container">
+                            <div class="row-label"><?php echo "Row " . htmlspecialchars($row_number); ?></div>
+                            <div class="seat-row">
+                                <?php
+                                usort($row_seats, fn($a, $b) => $a['seat_number'] - $b['seat_number']);
+                                foreach ($row_seats as $seat): ?>
+                                    <label class="seat btn btn-outline-secondary <?php echo $seat['is_taken'] ? 'taken' : ''; ?>">
+                                        <input type="checkbox" name="seats[]" value="<?= $seat['id'] ?>" class="d-none seat-checkbox"
+                                               data-row="<?= htmlspecialchars($row_number); ?>"
+                                               data-seat="<?= htmlspecialchars($seat['seat_number']); ?>"
+                                            <?= $seat['is_taken'] ? 'disabled' : ''; ?>>
+                                        <i class="fas fa-chair"></i>
+                                    </label>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+
+                <div class="d-flex justify-content-center align-items-center gap-3 mt-4 legend">
+                    <span class="seat d-inline-flex"><i class="fas fa-chair"></i>&nbsp;Available</span>
+                    <span class="seat selected d-inline-flex"><i class="fas fa-chair"></i>&nbsp;Selected</span>
+                    <span class="seat taken d-inline-flex"><i class="fas fa-chair"></i>&nbsp;Taken</span>
+                </div>
             </div>
 
+            <!-- PRAWA STRONA: TICKET SUMMARY -->
+            <div class="col-lg-4">
+                <h3 class="text-center">Ticket Summary:</h3>
+                <ul class="list-group">
+                    <?php foreach ($selected_tickets as $type => $ticket): ?>
+                        <li class="list-group-item"> <?= ucfirst($type); ?>: <?= $ticket['count']; ?> x <?= $ticket['price']; ?> €</li>
+                        <input type="hidden" name="ticket_types[<?= $type ?>]" value="<?= $ticket['count']; ?>">
+                    <?php endforeach; ?>
+                </ul>
 
-
-            <h3 class="mt-4">Ticket Summary:</h3>
-        <ul class="list-group">
-            <?php foreach ($selected_tickets as $type => $ticket): ?>
-                <li class="list-group-item"> <?php echo ucfirst($type); ?>: <?php echo $ticket['count']; ?> x <?php echo $ticket['price']; ?> €</li>
-                <input type="hidden" name="ticket_types[<?php echo $type; ?>]" value="<?php echo $ticket['count']; ?>">
-            <?php endforeach; ?>
-        </ul>
-
-        <button type="submit" class="btn btn-primary mt-3">Confirm Selection</button>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-danger mt-4 px-4">Confirm Selection</button>
+                </div>
+            </div>
+        </div>
     </form>
 </div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
@@ -255,12 +251,12 @@ while ($row = $seats_result->fetch_assoc()) {
     document.addEventListener('DOMContentLoaded', function () {
         const timerElement = document.getElementById('timer');
         const startTime = <?php echo $_SESSION['reservation_timer_start']; ?>;
-        const duration = 15 * 60 * 1000; // 15 minut w ms
+        const duration = 15 * 60 * 1000;
 
         let expired = false;
 
         function updateTimer() {
-            if (expired) return; // już się skończyło, nie rób nic
+            if (expired) return;
 
             const now = Date.now();
             const elapsed = now - (startTime * 1000);
@@ -268,14 +264,13 @@ while ($row = $seats_result->fetch_assoc()) {
 
             if (remaining <= 0) {
                 expired = true;
-                clearInterval(timerInterval); // zatrzymaj licznik
+                clearInterval(timerInterval);
                 timerElement.innerText = "00:00";
 
-                // Pokaż tylko raz alert
                 setTimeout(() => {
                     alert("⏰ Your reservation time has expired. You will be redirected.");
                     window.location.href = "reset_timer.php";
-                }, 100); // lekkie opóźnienie pozwala DOM się uspokoić
+                }, 100);
             } else {
                 const minutes = Math.floor(remaining / 60000);
                 const seconds = Math.floor((remaining % 60000) / 1000);
@@ -283,7 +278,7 @@ while ($row = $seats_result->fetch_assoc()) {
             }
         }
 
-        updateTimer(); // uruchom natychmiast
+        updateTimer();
         const timerInterval = setInterval(updateTimer, 1000); // co sekundę
     });
 </script>

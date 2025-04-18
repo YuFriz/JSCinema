@@ -3,6 +3,16 @@ global $conn;
 session_start();
 require 'db_connection.php';
 require 'vendor/autoload.php';
+if (
+    !isset($_SESSION['ticket_ids']) ||
+    !is_array($_SESSION['ticket_ids']) ||
+    count($_SESSION['ticket_ids']) === 0
+) {
+    echo "<h2 style='color: red; text-align: center; margin-top: 50px;'>Ticket data not found. Please return to your order summary.</h2>";
+    exit();
+}
+
+
 
 // **CHECK IF HEADERS HAVE ALREADY BEEN SENT**
 if (headers_sent($file, $line)) {
@@ -119,12 +129,15 @@ $pdf->Cell(190, 10, "Thank you for purchasing a ticket at JSCinema!", 0, 1, 'C')
 
 ob_end_clean(); // Instead of `ob_clean(); flush();`
 // **Direct file download**
-$pdf_filename = "ticket_" . implode("_", $ticket_ids) . ".pdf";
+$pdf_filename = "ticket_" . implode("_", $_SESSION['ticket_ids']) . ".pdf";
 header('Content-Type: application/pdf');
 header('Content-Disposition: attachment; filename="' . $pdf_filename . '"');
 $pdf->Output('I');
 
 // ✅ Remove `ticket_ids` after download
-unset($_SESSION['ticket_ids']);
+if (!isset($_GET['auto'])) {
+    unset($_SESSION['ticket_ids']);
+}
+
 
 exit();

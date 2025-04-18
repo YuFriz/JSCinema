@@ -2,8 +2,6 @@
 session_start();
 require 'db_connection.php';
 
-global $conn;
-
 if (!isset($_GET['movie_id'], $_GET['screening_id'], $_GET['movie_name'], $_GET['start_time'])) {
     die("Error: Missing required data.");
 }
@@ -51,6 +49,26 @@ $_SESSION['selected_tickets'] = [
     'start_time' => $start_time,
     'total_tickets' => $_POST['total_tickets'] ?? 0
 ];
+
+
+$free_tickets = 0;
+
+if (isset($_SESSION['user_id'])) {
+    $user_id = $_SESSION['user_id'];
+    $sql = "SELECT points, used_free_tickets FROM points WHERE user_id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+
+    $points = $row['points'] ?? 0;
+    $free_tickets = floor($points / 5);
+
+
+    $stmt->close();
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -117,6 +135,7 @@ $_SESSION['selected_tickets'] = [
 
     </div>
 
+
     <div class="stepper d-flex justify-content-between align-items-center my-4 px-md-5">
         <div class="step active">
             <div class="circle"></div>
@@ -153,6 +172,24 @@ $_SESSION['selected_tickets'] = [
             </tr>
             </thead>
             <tbody>
+            <?php if (isset($_SESSION['user_id']) && $free_tickets > 0): ?>
+                <tr>
+                    <td>
+                        <span class="text-success fw-bold">Free Ticket</span>
+                        <div class="small text-muted">(You have <?= $free_tickets ?> free ticket<?= $free_tickets > 1 ? 's' : '' ?>)</div>
+                    </td>
+                    <td class="text-success">0.00 €</td>
+                    <td>
+                        <div class="input-group ticket-quantity" data-type="free">
+                            <button type="button" class="btn btn-outline-success decrement">−</button>
+                            <input type="number" class="form-control text-center quantity-input" name="free" value="0" min="0" max="<?= min($free_tickets, $available_seats) ?>">
+                            <button type="button" class="btn btn-outline-success increment">+</button>
+                        </div>
+                    </td>
+                </tr>
+            <?php endif; ?>
+
+
             <tr>
                 <td>Regular Ticket</td>
                 <td>7.99 €</td>

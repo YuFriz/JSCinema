@@ -1,12 +1,8 @@
 <?php
 require 'session_manager.php';
-require_once 'vendor/autoload.php'; // FPDF
+require_once 'vendor/autoload.php';
+require 'db_connection.php';
 
-// Database connection
-$conn = new mysqli('localhost', 'root', '', 'cinemajs');
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
 
 $user_id = $_SESSION['user_id'];
 $current_time = date('Y-m-d H:i:s');
@@ -38,6 +34,32 @@ while ($row = $result->fetch_assoc()) {
     }
 }
 
+
+/*points*/
+$points_count = count($non_active_tickets);
+
+$check = $conn->prepare("SELECT id FROM points WHERE user_id = ?");
+$check->bind_param("i", $user_id);
+$check->execute();
+$check_result = $check->get_result();
+
+if ($check_result->num_rows > 0) {
+    // Update istniejących punktów
+    $update = $conn->prepare("UPDATE points SET points = ? WHERE user_id = ?");
+    $update->bind_param("ii", $points_count, $user_id);
+    $update->execute();
+    $update->close();
+} else {
+    // Wstaw nowy rekord
+    $insert = $conn->prepare("INSERT INTO points (user_id, points) VALUES (?, ?)");
+    $insert->bind_param("ii", $user_id, $points_count);
+    $insert->execute();
+    $insert->close();
+}
+
+$check->close();
+
+
 $stmt->close();
 $conn->close();
 ?>
@@ -51,7 +73,8 @@ $conn->close();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="mytickets">
+
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
@@ -59,64 +82,102 @@ $conn->close();
         <a href="profile.php" class="btn btn-outline-light">Back to Profile Panel</a>
     </div>
 </nav>
+<div class="container my-5 card-body-mytickets p-4">
 
 <div class="container my-5">
-    <h2 class="mb-4">My Tickets</h2>
-
-    <div class="btn-group mb-4">
+    <div class="container my-5 mytickets-buttons">
+        <h2 class="mb-4">My Tickets</h2>
+        <div class="d-flex justify-content-center gap-3 mb-4">
         <button class="btn btn-success" id="showActive">Active Tickets</button>
-        <button class="btn btn-secondary" id="showNonActive">Non-Active Tickets</button>
+            <button class="btn btn-secondary" id="showNonActive">Non-Active Tickets</button>
+        </div>
     </div>
 
+
+
     <div id="activeTickets">
-        <h3>Active Tickets</h3>
+        <div class="filter-title">Active Tickets</div>
         <?php if (empty($active_tickets)): ?>
             <p class="text-muted">You have no active tickets.</p>
         <?php else: ?>
-            <div class="row">
-                <?php foreach ($active_tickets as $ticket): ?>
-                    <div class="col-md-6 mb-4">
-                        <div class="card border-success">
-                            <div class="card-body">
-                                <h5 class="card-title text-primary">Movie: <?php echo htmlspecialchars($ticket['movie_name']); ?></h5>
-                                <p class="card-text"><strong>Date:</strong> <?php echo htmlspecialchars($ticket['screening_date']); ?></p>
-                                <p class="card-text"><strong>Time:</strong> <?php echo htmlspecialchars($ticket['start_time']); ?></p>
-                                <p class="card-text"><strong>Seat:</strong> <?php echo htmlspecialchars($ticket['seat_id']); ?></p>
-                                <p class="card-text"><strong>Ticket Type:</strong> <?php echo htmlspecialchars($ticket['ticket_type']); ?></p>
-                                <p class="card-text"><strong>Price:</strong> <?php echo number_format($ticket['price'], 2, ',', ' '); ?> $</p>
-                                <a href="generate_ticket_p.php?ticket_id=<?php echo $ticket['id']; ?>" class="btn btn-outline-primary">Download PDF</a>
+            <?php
+            $grouped = [];
+
+            foreach ($active_tickets as $ticket) {
+                $key = $ticket['movie_name'] . '|' . $ticket['screening_date'] . '|' . $ticket['start_time'];
+                $grouped[$key][] = $ticket;
+            }
+            ?>
+
+            <?php foreach ($grouped as $key => $tickets): ?>
+                <?php
+                list($movie_name, $date, $time) = explode('|', $key);
+                ?>
+                <div class="mb-4">
+                    <h5 class="text-primary"><?= htmlspecialchars($movie_name) ?></h5>
+                    <p><strong>Date:</strong> <?= htmlspecialchars($date) ?> | <strong>Time:</strong> <?= substr(htmlspecialchars($time), 0, 5) ?></p>
+
+                    <div class="row">
+                        <?php foreach ($tickets as $ticket): ?>
+                            <div class="col-md-6 mb-3">
+                                <div class="card-profile-ticket border-success">
+                                    <div class="card-body">
+                                        <p class="card-text"><strong>Seat:</strong> <?= htmlspecialchars($ticket['seat_id']) ?></p>
+                                        <p class="card-text"><strong>Type:</strong> <?= htmlspecialchars($ticket['ticket_type']) ?></p>
+                                        <p class="card-text"><strong>Price:</strong> <?= number_format($ticket['price'], 2, ',', ' ') ?> $</p>
+                                        <a href="generate_ticket_p.php?ticket_id=<?= $ticket['id'] ?>" class="btn btn-outline-primary">Download PDF</a>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                        <?php endforeach; ?>
                     </div>
-                <?php endforeach; ?>
-            </div>
+                </div>
+            <?php endforeach; ?>
         <?php endif; ?>
     </div>
 
     <div id="nonActiveTickets" style="display: none;">
-        <h3>Non-Active Tickets</h3>
+        <div class="filter-title">Non-Active Tickets</div>
         <?php if (empty($non_active_tickets)): ?>
             <p class="text-muted">You have no non-active tickets.</p>
         <?php else: ?>
-            <div class="row">
-                <?php foreach ($non_active_tickets as $ticket): ?>
-                    <div class="col-md-6 mb-4">
-                        <div class="card border-secondary">
-                            <div class="card-body">
-                                <h5 class="card-title text-primary">Movie: <?php echo htmlspecialchars($ticket['movie_name']); ?></h5>
-                                <p class="card-text"><strong>Date:</strong> <?php echo htmlspecialchars($ticket['screening_date']); ?></p>
-                                <p class="card-text"><strong>Time:</strong> <?php echo htmlspecialchars($ticket['start_time']); ?></p>
-                                <p class="card-text"><strong>Seat:</strong> <?php echo htmlspecialchars($ticket['seat_id']); ?></p>
-                                <p class="card-text"><strong>Ticket Type:</strong> <?php echo htmlspecialchars($ticket['ticket_type']); ?></p>
-                                <p class="card-text"><strong>Price:</strong> <?php echo number_format($ticket['price'], 2, ',', ' '); ?> $</p>
-                                <button class="btn btn-outline-secondary disabled">Screening Ended</button>
+            <?php
+            $grouped_non = [];
+
+            foreach ($non_active_tickets as $ticket) {
+                $key = $ticket['movie_name'] . '|' . $ticket['screening_date'] . '|' . $ticket['start_time'];
+                $grouped_non[$key][] = $ticket;
+            }
+            ?>
+
+            <?php foreach ($grouped_non as $key => $tickets): ?>
+                <?php
+                list($movie_name, $date, $time) = explode('|', $key);
+                ?>
+                <div class="mb-4">
+                    <h5 class="text-secondary"><?= htmlspecialchars($movie_name) ?></h5>
+                    <p><strong>Date:</strong> <?= htmlspecialchars($date) ?> | <strong>Time:</strong> <?= substr(htmlspecialchars($time), 0, 5) ?></p>
+
+                    <div class="row">
+                        <?php foreach ($tickets as $ticket): ?>
+                            <div class="col-md-6 mb-3">
+                                <div class="card-profile-ticket border-secondary">
+                                    <div class="card-body">
+                                        <p class="card-text"><strong>Seat:</strong> <?= htmlspecialchars($ticket['seat_id']) ?></p>
+                                        <p class="card-text"><strong>Type:</strong> <?= htmlspecialchars($ticket['ticket_type']) ?></p>
+                                        <p class="card-text"><strong>Price:</strong> <?= number_format($ticket['price'], 2, ',', ' ') ?> $</p>
+                                        <button class="btn btn-outline-secondary disabled">Screening Ended</button>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                        <?php endforeach; ?>
                     </div>
-                <?php endforeach; ?>
-            </div>
+                </div>
+            <?php endforeach; ?>
         <?php endif; ?>
     </div>
+
+</div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

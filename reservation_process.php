@@ -45,7 +45,8 @@ if ($step === 'finalize') {
         'children' => 4.5,
         'club' => 5.0,
         'youth' => 5.5,
-        'senior' => 4.0
+        'senior' => 4.0,
+        'free' => 0.00
     ];
 
     $conn->begin_transaction();
@@ -57,7 +58,10 @@ if ($step === 'finalize') {
                 VALUES (?, ?, ?, ?, ?, ?, NOW())
             ");
 
+
         $seat_details_stmt = $conn->prepare("SELECT row_number, seat_number FROM seats WHERE id = ?");
+
+        $free_tickets_used = 0;
 
         foreach ($ticket_types as $type => $count) {
             $price = $ticket_prices[$type] ?? 0;
@@ -69,7 +73,6 @@ if ($step === 'finalize') {
 
                 $seat_id = array_shift($selected_seats);
 
-                // Pobierz row_number i seat_number dla danego seat_id
                 $seat_details_stmt->bind_param("i", $seat_id);
                 $seat_details_stmt->execute();
                 $seat_details_result = $seat_details_stmt->get_result();
@@ -78,7 +81,7 @@ if ($step === 'finalize') {
                     throw new Exception("Error: Seat details not found.");
                 }
 
-                $stmt->bind_param("iiiisd", $user_id, $movie_id, $screening_id, $seat_id, $type, $price);
+                $stmt->bind_param("iiissd", $user_id, $movie_id, $screening_id, $seat_id, $type, $price);
                 $stmt->execute();
 
                 $last_id = $conn->insert_id;
@@ -87,8 +90,21 @@ if ($step === 'finalize') {
                 }
 
                 $ticket_ids[] = $last_id;
+
+                if ($type === 'free') {
+                    $free_tickets_used++;
+                }
             }
         }
+
+// Na końcu: aktualizuj punkty tylko raz!
+        if ($free_tickets_used > 0) {
+            $required_points = $free_tickets_used * 5;
+            $update_points_stmt = $conn->prepare("UPDATE points SET points = points - ?, used_free_tickets = used_free_tickets + ? WHERE user_id = ?");
+            $update_points_stmt->bind_param("iii", $required_points, $free_tickets_used, $user_id);
+            $update_points_stmt->execute();
+        }
+
 
 
         if (empty($ticket_ids)) {
@@ -145,16 +161,43 @@ if ($step === 'success') {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Thank You for Your Purchase</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
         <link rel="stylesheet" href="style.css">
         <script>
-            setTimeout(function() {
-                document.getElementById('downloadLink').click();
+            setTimeout(function () {
+                window.open("ticket_generate.php?auto=1", "_blank");
             }, 10000);
         </script>
-    </head>
-    <body class="container text-center mt-5">
 
+    </head>
+    <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="index.php">JSCinema</a>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <?php if (isset($_SESSION['user_id'])): ?>
+                            <a class="nav-link d-flex align-items-center justify-content-center border rounded p-2 ms-2" href="profile.php" title="Profile" style="width: 42px; height: 42px;">
+                                <i class="bi bi-person-circle fs-4"></i>
+                            </a>
+                        <?php else: ?>
+                            <a class="nav-link d-flex align-items-center justify-content-center border rounded p-2 ms-2" href="register_login.php" title="Login/Register" style="width: 42px; height: 42px;">
+                                <i class="bi bi-box-arrow-in-right fs-4"></i>
+                            </a>
+                        <?php endif; ?>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+    <div class="container text-center mt-5">
     <div class="stepper d-flex justify-content-between align-items-center my-4 px-md-5">
+        <!-- Kroki -->
         <div class="step active">
             <div class="circle"></div>
             <div class="label">Tickets</div>
@@ -170,12 +213,12 @@ if ($step === 'success') {
             <div class="label">Payment</div>
         </div>
     </div>
-    <h1>Thank You for Your Purchase at JSCinema</h1>
-    <p>Your purchase has been successfully completed.</p>
+        <h1>Thank You for Your Purchase at JSCinema</h1>
+        <p>Your purchase has been successfully completed.</p>
 
-    <a id="downloadLink" href="ticket_generate.php" class="btn btn-primary">Download Ticket</a>
-
-    <p class="mt-3">If you do not download manually, your ticket will be downloaded automatically in 10 seconds.</p>
+        <a id="downloadLink" href="ticket_generate.php" class="btn btn-primary" target="_blank">Download Ticket</a>
+        <p class="mt-3">If you do not download manually, your ticket will be downloaded automatically in 10 seconds.</p>
+    </div>
     </body>
     </html>
     <?php
