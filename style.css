@@ -598,14 +598,19 @@ body.profile{
     object-fit: cover;
     border: 4px solid #fff;
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-}
-.initials {
+
     background-color: #DA1E37;
     color: #fff;
     font-size: 2.5rem;
-    line-height: 140px;
     font-weight: 600;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin: 0 auto;
 }
+
 
 .edit-icon {
     position: absolute;

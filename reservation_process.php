@@ -163,11 +163,13 @@ if ($step === 'success') {
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
         <link rel="stylesheet" href="style.css">
+        <?php $ticket_ids_param = implode("_", $_SESSION['ticket_ids']); ?>
         <script>
             setTimeout(function () {
-                window.open("ticket_generate.php?auto=1", "_blank");
+                window.open("ticket_generate.php?ids=<?= $ticket_ids_param ?>&auto=1", "_blank");
             }, 10000);
         </script>
+
 
     </head>
     <body>
@@ -216,7 +218,11 @@ if ($step === 'success') {
         <h1>Thank You for Your Purchase at JSCinema</h1>
         <p>Your purchase has been successfully completed.</p>
 
-        <a id="downloadLink" href="ticket_generate.php" class="btn btn-primary" target="_blank">Download Ticket</a>
+        <?php
+        $ticket_ids_param = implode("_", $_SESSION['ticket_ids']);
+        ?>
+        <a id="downloadLink" href="ticket_generate.php?ids=<?= $ticket_ids_param ?>" class="btn btn-primary" target="_blank">Download Ticket</a>
+
         <p class="mt-3">If you do not download manually, your ticket will be downloaded automatically in 10 seconds.</p>
     </div>
     </body>

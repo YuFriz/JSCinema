@@ -8,7 +8,7 @@ $images = [];
 while ($row = $result->fetch_assoc()) {
     $images[] = $row['image_path'];
 }
-$conn->close();
+
 ?>
 
 <div class="banner-container">

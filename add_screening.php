@@ -77,7 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $auditorium_id = $_POST['auditorium_id'] ?? null;
 
     if (!$movie_id || !$screening_date || !$start_time || !$auditorium_id) {
-        $message = "<div class='alert alert-danger'>Błąd: Wszystkie pola są wymagane!</div>";
+        $message = "<div class='alert alert-danger'>Error: All fields are required!</div>";
     } else {
         $sql_check = "SELECT id FROM screenings WHERE screening_date = ? AND start_time = ? AND auditorium_id = ?";
         $stmt = $conn->prepare($sql_check);
@@ -86,16 +86,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $stmt->store_result();
 
         if ($stmt->num_rows > 0) {
-            $message = "<div class='alert alert-warning'>Błąd: W tym audytorium o tej godzinie już odbywa się seans!</div>";
+            $message = "<div class='alert alert-warning'>Warning: A screening already exists at this time in the selected auditorium!</div>";
         } else {
             $sql_insert = "INSERT INTO screenings (movie_id, screening_date, start_time, auditorium_id) VALUES (?, ?, ?, ?)";
             $stmt = $conn->prepare($sql_insert);
             $stmt->bind_param("issi", $movie_id, $screening_date, $start_time, $auditorium_id);
 
             if ($stmt->execute()) {
-                $message = "<div class='alert alert-success'>Sukces: Seans został dodany!</div>";
+                $message = "<div class='alert alert-success'>Success: Screening has been added!</div>";
             } else {
-                $message = "<div class='alert alert-danger'>Błąd: Nie udało się dodać seansu.</div>";
+                $message = "<div class='alert alert-danger'>Error: Failed to add screening.</div>";
             }
         }
         $stmt->close();
@@ -105,7 +105,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -214,14 +214,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         auditoriumContainer.classList.remove("d-none");
                     }
                 })
-                .catch(error => console.error("Błąd pobierania audytoriów:", error));
+                .catch(error => console.error("Error fetching auditoriums:", error));
         }
 
         // Zapobieganie wysyłaniu formularza bez wybranego audytorium
         form.addEventListener("submit", function (event) {
             if (!selectedAuditoriumInput.value) {
                 event.preventDefault(); // Zatrzymanie wysyłania formularza
-                alert("Wybierz audytorium przed dodaniem seansu!");
+                alert("Please select an auditorium before adding a screening!");
             }
         });
 

@@ -1,30 +1,41 @@
 <?php
 require 'session_manager.php';
+require 'db_connection.php';
 
-$host = "localhost";
-$dbname = "cinemajs";
-$username = "root";
-$password = "";
 
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("Connection failed: " . $e->getMessage());
+function fetchMovies($conn, $status) {
+    if (!$conn || !$conn->ping()) {
+        die("Połączenie z bazą danych jest zamknięte.");
+    }
+
+    $stmt = $conn->prepare("
+        SELECT movies.id, movies.name, 
+               (SELECT image_path FROM movie_images 
+                WHERE movie_images.movie_id = movies.id 
+                ORDER BY movie_images.id LIMIT 1) AS image_path
+        FROM movies 
+        WHERE movies.status = ?
+    ");
+
+    if (!$stmt) {
+        die("Błąd przygotowania zapytania: " . $conn->error);
+    }
+
+    $stmt->bind_param("s", $status);
+
+    if (!$stmt->execute()) {
+        die("Błąd wykonania zapytania: " . $stmt->error);
+    }
+
+    $result = $stmt->get_result();
+    if ($result === false) {
+        die("Błąd pobierania wyników: " . $stmt->error);
+    }
+
+    return $result->fetch_all(MYSQLI_ASSOC);
 }
 
-function fetchMovies($pdo, $status) {
-    $sql = "SELECT movies.id, movies.name, 
-                   (SELECT image_path FROM movie_images 
-                    WHERE movie_images.movie_id = movies.id 
-                    ORDER BY movie_images.id LIMIT 1) AS image_path
-            FROM movies 
-            WHERE movies.status = :status";
 
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute(['status' => $status]);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
 $sections = [
     "already showing" => "Already Showing",
     "soon in cinema" => "Soon in Cinema"
@@ -108,7 +119,7 @@ $sections = [
 
                         <div class="movie-carousel row flex-nowrap overflow-hidden" data-section="<?= $status ?>">
                             <?php
-                            $movies = fetchMovies($pdo, $status);
+                            $movies = fetchMovies($conn, $status);
                             foreach ($movies as $movie): ?>
                                 <div class="col-md-3 movie-card flex-shrink-0">
                                     <a href='movie.php?id=<?= $movie['id'] ?>' class='text-decoration-none text-dark'>

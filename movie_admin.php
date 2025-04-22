@@ -128,7 +128,24 @@ $stmt->close();
                         </div>
                     </td>
 
-                    <td><?php echo (int)$row['stars'] . ' ⭐'; ?></td>
+                    <td>
+                        <?php
+                        $stmt = $conn->prepare("SELECT AVG(star) as avg_star, COUNT(*) as count_reviews FROM reviews_ratings WHERE movie_id = ?");
+                        $stmt->bind_param("i", $row['id']);
+                        $stmt->execute();
+                        $result = $stmt->get_result();
+                        $rating = $result->fetch_assoc();
+                        $stmt->close();
+
+                        if ($rating['count_reviews'] > 0) {
+                            $avg = round($rating['avg_star'], 1);
+                            echo $avg . ' ⭐ (' . $rating['count_reviews'] . ' review' . ($rating['count_reviews'] > 1 ? 's' : '') . ')';
+                        } else {
+                            echo 'No ratings';
+                        }
+                        ?>
+                    </td>
+
                     <td><?php echo htmlspecialchars($row['author']); ?></td>
                     <td>
                         <div class="d-flex flex-wrap justify-content-center">
@@ -190,28 +207,6 @@ $stmt->close();
     </div>
 </div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        document.querySelectorAll(".toggle-description").forEach(function (btn) {
-            btn.addEventListener("click", function (e) {
-                e.preventDefault();
-                const wrapper = this.closest(".description-wrapper");
-                const shortText = wrapper.querySelector(".short-text");
-                const fullText = wrapper.querySelector(".full-text");
-
-                if (fullText.classList.contains("d-none")) {
-                    shortText.classList.add("d-none");
-                    fullText.classList.remove("d-none");
-                    this.textContent = "Show less";
-                } else {
-                    shortText.classList.remove("d-none");
-                    fullText.classList.add("d-none");
-                    this.textContent = "Show more";
-                }
-            });
-        });
-    });
-</script>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {

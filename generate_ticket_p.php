@@ -1,6 +1,7 @@
 <?php
 require 'session_manager.php';
-require_once 'vendor/autoload.php'; // FPDF
+require_once('vendor/setasign/fpdf/fpdf.php');
+
 
 // Połączenie z bazą danych
 $conn = new mysqli('localhost', 'root', '', 'cinemajs');

@@ -1,57 +1,45 @@
 <?php
-global $conn;
-session_start();
 require 'db_connection.php';
-require 'vendor/autoload.php';
-if (
-    !isset($_SESSION['ticket_ids']) ||
-    !is_array($_SESSION['ticket_ids']) ||
-    count($_SESSION['ticket_ids']) === 0
-) {
+require_once('vendor/setasign/fpdf/fpdf.php');
+
+if (empty($_GET['ids'])) {
     echo "<h2 style='color: red; text-align: center; margin-top: 50px;'>Ticket data not found. Please return to your order summary.</h2>";
     exit();
 }
 
+$ticket_ids = explode('_', $_GET['ids']);
+$placeholders = implode(',', array_fill(0, count($ticket_ids), '?'));
+$types = str_repeat('i', count($ticket_ids));
 
+$stmt = $conn->prepare("
+    SELECT pt.id, pt.ticket_type, pt.price, pt.seat_id, s.row_number, s.seat_number,
+           m.name AS movie_name, scr.screening_date, scr.start_time, a.name AS auditorium_name
+    FROM purchased_tickets pt
+    JOIN seats s ON pt.seat_id = s.id
+    JOIN screenings scr ON pt.screening_id = scr.id
+    JOIN auditoriums a ON scr.auditorium_id = a.id
+    JOIN movies m ON pt.movie_id = m.id
+    WHERE pt.id IN ($placeholders)
+");
+$stmt->bind_param($types, ...$ticket_ids);
+$stmt->execute();
+$result = $stmt->get_result();
 
-// **CHECK IF HEADERS HAVE ALREADY BEEN SENT**
-if (headers_sent($file, $line)) {
-    die("Error: Headers already sent in file: $file, line: $line");
+if ($result->num_rows === 0) {
+    die("Error: Ticket(s) not found.");
 }
 
-// Retrieve data from session
-$ticket_ids = $_SESSION['ticket_ids'];
-$movie_id = $_SESSION['purchased_tickets']['movie_id'];
-$screening_id = $_SESSION['purchased_tickets']['screening_id'];
-$seats = $_SESSION['purchased_tickets']['seats'];
-$ticket_types = $_SESSION['purchased_tickets']['ticket_types'];
+$tickets = $result->fetch_all(MYSQLI_ASSOC);
 
-// **Create PDF**
+// ✅ PDF start
 $pdf = new FPDF();
 $pdf->AddPage();
 $pdf->SetFont('Arial', 'B', 16);
 $pdf->Cell(190, 10, "Cinema Ticket - JSCinema", 0, 1, 'C');
 $pdf->Ln(5);
 
-// **Movie and screening details**
-$stmt = $conn->prepare("
-    SELECT m.name AS movie_name, s.screening_date, s.start_time, a.name AS auditorium_name
-    FROM screenings s
-    JOIN movies m ON s.movie_id = m.id
-    JOIN auditoriums a ON s.auditorium_id = a.id
-    WHERE s.id = ?
-");
-$stmt->bind_param("i", $screening_id);
-$stmt->execute();
-$result = $stmt->get_result();
+$screening = $tickets[0]; // Zakładamy, że wszystkie bilety dotyczą tego samego seansu
 
-if ($result->num_rows === 0) {
-    die("Error: Screening information not found.");
-}
-$screening = $result->fetch_assoc();
-$stmt->close();
-
-// **Add details to PDF**
 $pdf->SetFont('Arial', '', 12);
 $pdf->Cell(190, 10, "Movie: " . utf8_decode($screening['movie_name']), 0, 1);
 $pdf->Cell(190, 10, "Date: " . $screening['screening_date'], 0, 1);
@@ -59,85 +47,28 @@ $pdf->Cell(190, 10, "Time: " . $screening['start_time'], 0, 1);
 $pdf->Cell(190, 10, "Auditorium: " . utf8_decode($screening['auditorium_name']), 0, 1);
 $pdf->Ln(5);
 
-// **Add tickets**
+// Tabela z biletami
+$pdf->SetFont('Arial', 'B', 12);
 $pdf->Cell(50, 10, "Seat", 1);
 $pdf->Cell(50, 10, "Ticket Type", 1);
 $pdf->Cell(50, 10, "Price", 1);
 $pdf->Ln();
 
-$ticket_prices = [
-    'regular' => 7.99,
-    'children' => 4.5,
-    'club' => 5.0,
-    'youth' => 5.5,
-    'senior' => 4.0
-];
-
-$seat_index = 0; // Indeks dla numeracji miejsc
-$assigned_tickets = []; // Tablica do śledzenia przypisanych typów biletów
-
-foreach ($ticket_types as $type => $count) {
-    $price = $ticket_prices[$type] ?? 0;
-
-    for ($i = 0; $i < $count; $i++) {
-        if (!isset($seats[$seat_index])) {
-            continue; // Jeśli nie ma więcej siedzeń, pomijamy
-        }
-
-        $seat_id = $seats[$seat_index];
-
-        // Pobieranie numeru rzędu i numeru siedzenia
-        $seat_query = $conn->prepare("SELECT row_number, seat_number FROM seats WHERE id = ?");
-        $seat_query->bind_param("i", $seat_id);
-        $seat_query->execute();
-        $seat_result = $seat_query->get_result();
-        $seat_data = $seat_result->fetch_assoc();
-        $seat_query->close();
-
-        if (!$seat_data) {
-            continue;
-        }
-
-        $row_number = $seat_data['row_number'];
-        $seat_number = $seat_data['seat_number'];
-
-        // Zapisujemy przypisane miejsce i typ biletu
-        $assigned_tickets[] = [
-            'row' => $row_number,
-            'seat' => $seat_number,
-            'type' => $type,
-            'price' => $price
-        ];
-
-        $seat_index++; // Przechodzimy do kolejnego miejsca
-    }
-}
-
-// **Teraz generujemy PDF na podstawie `assigned_tickets`**
-foreach ($assigned_tickets as $ticket) {
-    $pdf->Cell(50, 10, "Row {$ticket['row']}, Seat {$ticket['seat']}", 1);
-    $pdf->Cell(50, 10, ucfirst($ticket['type']), 1);
+$pdf->SetFont('Arial', '', 12);
+foreach ($tickets as $ticket) {
+    $pdf->Cell(50, 10, "Row {$ticket['row_number']}, Seat {$ticket['seat_number']}", 1);
+    $pdf->Cell(50, 10, ucfirst($ticket['ticket_type']), 1);
     $pdf->Cell(50, 10, number_format($ticket['price'], 2) . " $", 1);
     $pdf->Ln();
 }
-
-
 
 $pdf->Ln(10);
 $pdf->SetFont('Arial', 'I', 10);
 $pdf->Cell(190, 10, "Thank you for purchasing a ticket at JSCinema!", 0, 1, 'C');
 
-ob_end_clean(); // Instead of `ob_clean(); flush();`
-// **Direct file download**
-$pdf_filename = "ticket_" . implode("_", $_SESSION['ticket_ids']) . ".pdf";
+// Output
+ob_end_clean();
 header('Content-Type: application/pdf');
-header('Content-Disposition: attachment; filename="' . $pdf_filename . '"');
+header('Content-Disposition: attachment; filename="ticket_' . implode('_', $ticket_ids) . '.pdf"');
 $pdf->Output('I');
-
-// ✅ Remove `ticket_ids` after download
-if (!isset($_GET['auto'])) {
-    unset($_SESSION['ticket_ids']);
-}
-
-
 exit();
