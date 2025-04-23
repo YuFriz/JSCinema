@@ -59,7 +59,8 @@ if ($step === 'finalize') {
             ");
 
 
-        $seat_details_stmt = $conn->prepare("SELECT row_number, seat_number FROM seats WHERE id = ?");
+        $seat_details_stmt = $conn->prepare("SELECT 'row_number', seat_number
+                                                                FROM seats WHERE id = ?");
 
         $free_tickets_used = 0;
 

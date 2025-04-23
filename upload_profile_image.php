@@ -1,10 +1,6 @@
 <?php
 require 'session_manager.php';
-
-$conn = new mysqli('localhost', 'root', '', 'cinemajs');
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+require 'db_connection.php';
 
 $user_id = $_SESSION['user_id'];
 

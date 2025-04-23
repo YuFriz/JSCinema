@@ -1,13 +1,7 @@
 <?php
 require 'session_manager.php';
 require_once('vendor/setasign/fpdf/fpdf.php');
-
-
-// Połączenie z bazą danych
-$conn = new mysqli('localhost', 'root', '', 'cinemajs');
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+require 'db_connection.php';
 
 if (!isset($_GET['ticket_id'])) {
     die("No ticket ID provided.");

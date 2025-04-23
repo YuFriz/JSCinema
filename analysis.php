@@ -56,22 +56,27 @@ $popular_showing_movies = $conn->query("SELECT m.name, COUNT(p.id) AS tickets
 
 
 // Weekly summary (past 7 days)
-$weekly_summary = $conn->query("SELECT DATE(screening_date) AS date, COUNT(id) AS screenings, 
-    (SELECT COUNT(*) FROM purchased_tickets WHERE screening_id IN 
-        (SELECT id FROM screenings WHERE screening_date = s.screening_date)
-    ) AS tickets_sold
-    FROM screenings s
-    WHERE screening_date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
-    GROUP BY DATE(screening_date) ORDER BY DATE(screening_date) ASC");
+
+$weekly_summary = $conn->query("SELECT screening_date as date, COUNT(id)
+AS screenings,
+     (SELECT COUNT(*) FROM purchased_tickets WHERE screening_id IN
+         (SELECT id FROM screenings WHERE screening_date = s.screening_date)
+     ) AS tickets_sold
+     FROM screenings s
+     WHERE screening_date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+     GROUP BY screening_date ORDER BY DATE(screening_date) ASC");
 
 // Monthly summary (past month grouped by year-month)
-$monthly_summary = $conn->query("SELECT DATE_FORMAT(screening_date, '%Y-%m') AS month, COUNT(id) AS screenings, 
-    (SELECT COUNT(*) FROM purchased_tickets WHERE screening_id IN 
-        (SELECT id FROM screenings WHERE DATE_FORMAT(screening_date, '%Y-%m') = DATE_FORMAT(s.screening_date, '%Y-%m'))
-    ) AS tickets_sold
-    FROM screenings s
-    WHERE screening_date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
-    GROUP BY DATE_FORMAT(screening_date, '%Y-%m') ORDER BY DATE_FORMAT(screening_date, '%Y-%m') ASC");
+$monthly_summary = $conn->query("SELECT DATE_FORMAT(screening_date,
+'%Y-%m') AS month, COUNT(id) AS screenings,
+     (SELECT COUNT(*) FROM purchased_tickets WHERE screening_id IN
+         (SELECT id FROM screenings WHERE DATE_FORMAT(screening_date,
+'%Y-%m') = DATE_FORMAT(s.screening_date, '%Y-%m'))
+     ) AS tickets_sold
+     FROM screenings s
+     WHERE screening_date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
+     GROUP BY screening_date ORDER BY DATE_FORMAT(screening_date,
+'%Y-%m') ASC");
 
 // movies with status 'coming soon'
 $coming_soon = $conn->query("SELECT name, movie_duration, created_at FROM movies WHERE status = 'soon in cinema' ORDER BY created_at DESC");

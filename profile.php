@@ -1,11 +1,6 @@
 <?php
 require 'session_manager.php';
-
-// Połączenie z bazą danych
-$conn = new mysqli('localhost', 'root', '', 'cinemajs');
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+require 'db_connection.php';
 
 $user_id = $_SESSION['user_id'];
 $sql = "SELECT imie, nazwisko, email, Status, profile_image FROM users WHERE id = ?";
