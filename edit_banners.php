@@ -117,9 +117,9 @@ $result = $conn->query("SELECT id, image_path, created_at, is_active FROM banner
     <div class="row">
         <?php while ($row = $result->fetch_assoc()): ?>
             <div class="col-md-3 col-sm-6 mb-4">
-                <div class="card banner-card text-center">
+                <div class="card banner-card-admin text-center">
                 <img src="<?php echo htmlspecialchars($row['image_path']); ?>" class="banner-preview card-img-top" alt="Banner">
-                    <div class="card-body">
+                    <div class="banner-card-admin">
                         <p class="card-text small text-muted"><?php echo $row['created_at']; ?></p>
                         <p>Status:
                             <span class="badge bg-<?php echo $row['is_active'] ? 'success' : 'secondary'; ?> status-badge">

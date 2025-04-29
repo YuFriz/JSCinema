@@ -189,8 +189,21 @@ $reviews = $reviewStmt->get_result();
 
         <?php if ($reviews->num_rows > 0): ?>
             <?php while ($r = $reviews->fetch_assoc()): ?>
+
+                <?php
+                $firstInitial = strtoupper(substr($r['imie'], 0, 1));
+                $lastInitial = isset($r['nazwisko']) ? strtoupper(substr($r['nazwisko'], 0, 1)) : '';
+                $initials = $firstInitial . $lastInitial;
+                ?>
+
                 <div class="d-flex align-items-center border rounded p-3 mb-3 bg-white shadow-sm" style="border-left: 5px solid #ffc107;">
-                    <img src="uploads/<?= htmlspecialchars($r['profile_image']) ?>" alt="Profile" class="rounded-circle me-3" style="width: 70px; height: 70px; object-fit: cover; border: 2px solid #ddd;">
+                    <div class="rounded-circle me-3 d-flex align-items-center justify-content-center bg-secondary text-white" style="width: 70px; height: 70px; object-fit: cover; border: 2px solid #ddd; font-size: 24px;">
+                        <?php if (!empty($r['profile_image'])): ?>
+                            <img src="uploads/<?= htmlspecialchars($r['profile_image']) ?>" alt="Profile" class="rounded-circle" style="width: 100%; height: 100%; object-fit: cover;">
+                        <?php else: ?>
+                            <?= $initials ?>
+                        <?php endif; ?>
+                    </div>
 
                     <div class="flex-grow-1">
                         <div class="d-flex justify-content-between align-items-center mb-1">

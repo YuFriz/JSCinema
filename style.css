@@ -1563,19 +1563,19 @@ body.reg_log{
     border-bottom: 1px solid #ddd;
 }
 
-.banner-card {
-    background-color: #fff;
+.banner-card-admin {
+    background-color: #fff;!important;
     border: 1px solid #ccc;
     border-radius: 6px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     overflow: hidden;
 }
 
-.banner-card .card-body {
+.banner-card-admin .card-body {
     padding: 12px;
 }
 
-.banner-card .btn {
+.banner-card-admin .btn {
     width: 100px;
 }
 

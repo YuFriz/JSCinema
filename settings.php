@@ -2,16 +2,11 @@
 require 'session_manager.php';
 require 'db_connection.php';
 
-// Sprawdzenie połączenia
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-// Zakładając, że masz dane użytkownika w sesji, np. $_SESSION['user_id']
+// Zakładając, że masz dane użytkownika w sesji
 $user_id = $_SESSION['user_id'];
 
 // Pobieranie danych użytkownika
-$sql = "SELECT imie, nazwisko, email FROM users WHERE id = ?";
+$sql = "SELECT imie, nazwisko, email, data_urodzenia FROM users WHERE id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
@@ -27,20 +22,23 @@ if ($result->num_rows > 0) {
 $success_message = "";
 $error_message = "";
 
+// Aktualizacja danych po przesłaniu formularza
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $new_email = $_POST['email'];
     $new_password = $_POST['password'];
+    $new_imie = $_POST['imie'];
+    $new_nazwisko = $_POST['nazwisko'];
+    $new_data_urodzenia = $_POST['data_urodzenia'];
 
-    // Aktualizacja danych
     if (!empty($new_password)) {
-        $new_password = password_hash($new_password, PASSWORD_DEFAULT);
-        $sql_update = "UPDATE users SET email = ?, password = ? WHERE id = ?";
+        $new_password_hashed = password_hash($new_password, PASSWORD_DEFAULT);
+        $sql_update = "UPDATE users SET email = ?, password = ?, imie = ?, nazwisko = ?, data_urodzenia = ? WHERE id = ?";
         $stmt = $conn->prepare($sql_update);
-        $stmt->bind_param("ssi", $new_email, $new_password, $user_id);
+        $stmt->bind_param("sssssi", $new_email, $new_password_hashed, $new_imie, $new_nazwisko, $new_data_urodzenia, $user_id);
     } else {
-        $sql_update = "UPDATE users SET email = ? WHERE id = ?";
+        $sql_update = "UPDATE users SET email = ?, imie = ?, nazwisko = ?, data_urodzenia = ? WHERE id = ?";
         $stmt = $conn->prepare($sql_update);
-        $stmt->bind_param("si", $new_email, $user_id);
+        $stmt->bind_param("ssssi", $new_email, $new_imie, $new_nazwisko, $new_data_urodzenia, $user_id);
     }
 
     if ($stmt->execute()) {
@@ -51,8 +49,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->close();
 }
 
+// Odśwież dane po aktualizacji
+$sql = "SELECT imie, nazwisko, email, data_urodzenia FROM users WHERE id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+if ($result->num_rows > 0) {
+    $user = $result->fetch_assoc();
+}
+
 $conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -87,6 +96,21 @@ $conn->close();
 
             <form action="settings.php" method="POST">
                 <div class="mb-3">
+                    <label for="imie" class="form-label">First Name:</label>
+                    <input type="text" id="imie" name="imie" class="form-control" value="<?= htmlspecialchars($user['imie']); ?>" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="nazwisko" class="form-label">Last Name:</label>
+                    <input type="text" id="nazwisko" name="nazwisko" class="form-control" value="<?= htmlspecialchars($user['nazwisko']); ?>" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="data_urodzenia" class="form-label">Date of Birth:</label>
+                    <input type="date" id="data_urodzenia" name="data_urodzenia" class="form-control" value="<?= htmlspecialchars($user['data_urodzenia']); ?>" required>
+                </div>
+
+                <div class="mb-3">
                     <label for="email" class="form-label">Email:</label>
                     <input type="email" id="email" name="email" class="form-control" value="<?= htmlspecialchars($user['email']); ?>" required>
                 </div>
@@ -98,9 +122,10 @@ $conn->close();
 
                 <div class="text-center">
                     <button type="submit" class="btn btn-success">Update Settings</button>
-                    <a href="index.php" class="btn btn-secondary">Cancel</a>
+                    <a href="profile.php" class="btn btn-secondary">Cancel</a>
                 </div>
             </form>
+
         </div>
     </div>
 </div>
