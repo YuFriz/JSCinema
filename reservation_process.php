@@ -1,7 +1,6 @@
 <?php
 session_start();
 require 'db_connection.php';
-require 'vendor/autoload.php';
 
 unset($_SESSION['reservation_timer_start'], $_SESSION['timer_screening_id']);
 
@@ -228,6 +227,10 @@ if ($step === 'success') {
     </div>
     </body>
     </html>
+
+
+
     <?php
 }
+
 ?>

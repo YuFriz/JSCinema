@@ -96,10 +96,10 @@ $profileImage = !empty($user['profile_image']) ? "uploads/" . htmlspecialchars($
                     <i class="fa-solid fa-film"></i> Movies
                 </a>
                 <a href="auditorium_repertuar.php" class="btn btn-secondary">
-                    <i class="fa-solid fa-chair"></i> Auditorium & Repertuar
+                    <i class="fa-solid fa-chair"></i> Auditorium & Repertoire
                 </a>
                 <a href="reviews_and_ratings_admin.php" class="btn btn-secondary">
-                    <i class="fa-solid fa-star-half-stroke"></i> Review
+                    <i class="fa-solid fa-star-half-stroke"></i> Reviews
                 </a>
                 <a href="users-admin.php" class="btn btn-secondary">
                     <i class="fa-solid fa-users"></i> Users

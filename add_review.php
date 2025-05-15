@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['review']) && isset($_
     $movie_name = $movie ? htmlspecialchars($movie['name']) : "Unknown Movie";
     $stmt->close();
 } else {
-    echo "Nieprawidłowe żądanie.";
+    echo "Bad response.";
     exit;
 }
 ?>
@@ -77,10 +77,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['review']) && isset($_
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="container mt-5">
-
-<div class="card mx-auto" style="max-width: 600px;">
+<div class="card-add-review mx-auto shadow" style="max-width: 600px;">
     <div class="card-header bg-primary text-white text-center">
-        <h4>Add a Review for "<b><?= $movie_name ?></b>"</h4>
+        <h4 class="mb-0">Add a Review for "<b><?= htmlspecialchars($movie_name) ?></b>"</h4>
     </div>
     <div class="card-body">
         <form method="post" action="add_review.php">
@@ -103,12 +102,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['review']) && isset($_
             </div>
 
             <div class="text-center">
-                <button type="submit" class="btn btn-success">Submit Review</button>
+                <button type="submit" class="btn btn-success me-2">Submit Review</button>
                 <a href="reviews_and_ratings.php" class="btn btn-secondary">Cancel</a>
             </div>
         </form>
     </div>
 </div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

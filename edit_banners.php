@@ -44,7 +44,7 @@ if (isset($_GET['delete'])) {
     $row = $result->fetch_assoc();
     if ($row) {
         unlink($row['image_path']); // delete file
-        $conn->query("DELETE FROM banners WHERE id = $id"); // delete from DB - dla pana
+        $conn->query("DELETE FROM banners WHERE id = $id");
     }
     header("Location: edit_banners.php");
     exit;

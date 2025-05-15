@@ -80,40 +80,25 @@ $screenings = $conn->query("
         <h3 class="text-center mb-4">
             🎬 <span class="fw-bold">Repertoire</span>
         </h3>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            <?php while ($row = $screenings->fetch_assoc()): ?>
+                <div class="col">
+                    <div class="card-admin-repertoire shadow-sm p-3 h-100 d-flex flex-column justify-content-between">
+                        <h5 class="mb-2"><?= htmlspecialchars($row['movie_name']); ?></h5>
 
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover align-middle text-center">
-                <thead class="table-dark">
-                <tr>
-                    <th>Movie</th>
-                    <th>Date 🗓️</th>
-                    <th>Time ⏰</th>
-                    <th>Auditorium 🎭</th>
-                    <th>Actions ⚙️</th>
-                </tr>
-                </thead>
-                <tbody>
-                <?php while ($row = $screenings->fetch_assoc()): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($row['movie_name']); ?></td>
-                        <td><span class="badge bg-light text-dark"><?= $row['screening_date']; ?></span></td>
-                        <td><span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill"><?= substr($row['start_time'], 0, 5); ?></span></td>
-                        <td><span class="text-dark fw-semibold"><?= htmlspecialchars($row['auditorium']); ?></span></td>
-                        <td>
-                            <div class="d-flex justify-content-center gap-2">
-                                <a href="edit_screening.php?id=<?= $row['id']; ?>" class="btn btn-warning btn-sm">
-                                    ✏️ Edit
-                                </a>
-                                <a href="delete_screening.php?id=<?= $row['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this screening?');">
-                                    ❌ Delete
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                <?php endwhile; ?>
-                </tbody>
-            </table>
+                        <p class="mb-1"><strong>Date:</strong> <span class="badge bg-light text-dark"><?= $row['screening_date']; ?></span></p>
+                        <p class="mb-1"><strong>Time:</strong> <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill"><?= substr($row['start_time'], 0, 5); ?></span></p>
+                        <p class="mb-3"><strong>Auditorium:</strong> <span class="text-dark fw-semibold"><?= htmlspecialchars($row['auditorium']); ?></span></p>
+
+                        <div class="d-flex justify-content-center gap-2 mt-auto">
+                            <a href="edit_screening.php?id=<?= $row['id']; ?>" class="btn btn-warning btn-sm">✏️ Edit</a>
+                            <a href="delete_screening.php?id=<?= $row['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this screening?');">❌ Delete</a>
+                        </div>
+                    </div>
+                </div>
+            <?php endwhile; ?>
         </div>
+
 
         <div class="text-center mt-4">
             <a href="add_screening.php" class="btn btn-success btn-lg px-4 shadow-sm">

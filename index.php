@@ -5,7 +5,7 @@ require 'db_connection.php';
 
 function fetchMovies($conn, $status) {
     if (!$conn || !$conn->ping()) {
-        die("Połączenie z bazą danych jest zamknięte.");
+        die("Connection with DB is closed");
     }
 
     $stmt = $conn->prepare("
@@ -18,18 +18,18 @@ function fetchMovies($conn, $status) {
     ");
 
     if (!$stmt) {
-        die("Błąd przygotowania zapytania: " . $conn->error);
+        die("Error in preparing " . $conn->error);
     }
 
     $stmt->bind_param("s", $status);
 
     if (!$stmt->execute()) {
-        die("Błąd wykonania zapytania: " . $stmt->error);
+        die("Execute error " . $stmt->error);
     }
 
     $result = $stmt->get_result();
     if ($result === false) {
-        die("Błąd pobierania wyników: " . $stmt->error);
+        die("Results error " . $stmt->error);
     }
 
     return $result->fetch_all(MYSQLI_ASSOC);
@@ -52,6 +52,7 @@ $sections = [
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body class="index">
 
@@ -73,10 +74,10 @@ $sections = [
                         <div id="search-results" class="position-absolute w-100 bg-white shadow rounded"></div>
                     </form>
                 </li>
-                <li class="nav-item d-flex align-items-center ms-2">
+                <li class="nav-item d-flex align-items-center ms-lg-2">
                     <?php if (isset($_SESSION['user_id'])): ?>
                         <div class="d-flex align-items-center gap-2">
-                            <a class="nav-link d-flex align-items-center justify-content-center border rounded p-2"
+                            <a class="nav-link d-flex align-items-center justify-content-center border rounded p-2 icon-log"
                                href="profile.php" title="Profile" style="width: 42px; height: 42px;">
                                 <i class="bi bi-person-circle fs-4"></i>
                             </a>
@@ -85,7 +86,7 @@ $sections = [
                             </form>
                         </div>
                     <?php else: ?>
-                        <a class="nav-link d-flex align-items-center justify-content-center border rounded p-2 ms-2"
+                        <a class="nav-link d-flex align-items-center justify-content-center border rounded p-2 icon-log"
                            href="register_login.php" title="Login/Register" style="width: 42px; height: 42px;">
                             <i class="bi bi-box-arrow-in-right fs-4"></i>
                         </a>
@@ -169,7 +170,7 @@ $sections = [
                                `);
                             });
 
-                            // Dodanie event listenera dla kliknięcia na wynik
+                            // event listenera dla kliknięcia na wynik
                             $(".search-item").on("click", function() {
                                 window.location.href = $(this).attr("data-url");
                             });

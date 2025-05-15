@@ -93,10 +93,10 @@ if (!$result) {
                         <div id="search-results" class="position-absolute w-100 bg-white shadow rounded"></div>
                     </form>
                 </li>
-                <li class="nav-item d-flex align-items-center ms-2">
+                <li class="nav-item d-flex align-items-center ms-lg-2">
                     <?php if (isset($_SESSION['user_id'])): ?>
                         <div class="d-flex align-items-center gap-2">
-                            <a class="nav-link d-flex align-items-center justify-content-center border rounded p-2"
+                            <a class="nav-link d-flex align-items-center justify-content-center border rounded p-2 icon-log"
                                href="profile.php" title="Profile" style="width: 42px; height: 42px;">
                                 <i class="bi bi-person-circle fs-4"></i>
                             </a>
@@ -105,7 +105,7 @@ if (!$result) {
                             </form>
                         </div>
                     <?php else: ?>
-                        <a class="nav-link d-flex align-items-center justify-content-center border rounded p-2 ms-2"
+                        <a class="nav-link d-flex align-items-center justify-content-center border rounded p-2 icon-log"
                            href="register_login.php" title="Login/Register" style="width: 42px; height: 42px;">
                             <i class="bi bi-box-arrow-in-right fs-4"></i>
                         </a>

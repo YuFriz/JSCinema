@@ -1,6 +1,5 @@
 <?php
 require 'session_manager.php';
-require_once 'vendor/autoload.php';
 require 'db_connection.php';
 
 
