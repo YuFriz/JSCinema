@@ -1,6 +1,6 @@
 <?php
 require 'session_manager.php';
-require_once('vendor/setasign/fpdf/fpdf.php');
+require_once('libs/fpdf/fpdf.php');
 require 'db_connection.php';
 
 if (!isset($_GET['ticket_id'])) {

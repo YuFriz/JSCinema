@@ -1,6 +1,6 @@
 <?php
 require 'db_connection.php';
-require_once('vendor/setasign/fpdf/fpdf.php');
+require_once('libs/fpdf/fpdf.php');
 
 if (empty($_GET['ids'])) {
     echo "<h2 style='color: red; text-align: center; margin-top: 50px;'>Ticket data not found. Please return to your order summary.</h2>";
