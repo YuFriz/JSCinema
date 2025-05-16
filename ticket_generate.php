@@ -46,10 +46,13 @@ if (!is_mobile()) {
     $pdf->Ln(5);
 
     $pdf->SetFont('Arial', '', 12);
-    $pdf->Cell(190, 10, "Movie: " . utf8_decode($screening['movie_name']), 0, 1);
+    $pdf->Cell(190, 10, "Movie: " .
+        mb_convert_encoding($screening['movie_name'], 'ISO-8859-1', 'UTF-8'), 0, 1);
     $pdf->Cell(190, 10, "Date: " . $screening['screening_date'], 0, 1);
     $pdf->Cell(190, 10, "Time: " . $screening['start_time'], 0, 1);
-    $pdf->Cell(190, 10, "Auditorium: " . utf8_decode($screening['auditorium_name']), 0, 1);
+    $pdf->Cell(190, 10, "Auditorium: " .
+        mb_convert_encoding($screening['auditorium_name'], 'ISO-8859-1',
+            'UTF-8'), 0, 1);
     $pdf->Ln(5);
 
     $pdf->SetFont('Arial', 'B', 12);
