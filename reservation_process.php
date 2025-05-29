@@ -31,7 +31,7 @@ if ($step === 'finalize') {
         die("Error: No reservation data found.");
     }
 
-    $user_id = $_SESSION['user_id'];
+    $user_id = $_SESSION['user_id'] ?? null;
     $movie_id = $_SESSION['reservation']['movie_id'];
     $screening_id = $_SESSION['reservation']['screening_id'];
     $selected_seats = $_SESSION['reservation']['seats'];
