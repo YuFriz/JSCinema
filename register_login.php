@@ -3,6 +3,17 @@ global $conn;
 session_start();
 require 'db_connection.php';
 
+$form_type = 'login'; // domyślnie login
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['register'])) {
+        $form_type = 'register';
+    } elseif (isset($_POST['login'])) {
+        $form_type = 'login';
+    }
+}
+
+
 if (isset($_GET['movie_id']) && isset($_GET['screening_id'])) {
     $_SESSION['movie_id'] = $_GET['movie_id'];
     $_SESSION['screening_id'] = $_GET['screening_id'];
@@ -137,7 +148,7 @@ $conn->close();
 
                 <!-- Login form -->
                 <form id="loginForm" method="POST" action="register_login.php">
-                    <input type="email" name="email_login" placeholder="Email Address" class="form-control mb-3" required>
+                    <input type="email" name="email_login" placeholder="Email Address" class="form-control mb-3" required value="<?= isset($_POST['email']) ? htmlspecialchars($_POST['email']) : '' ?>">
                     <input type="password" name="password_login" placeholder="Password" class="form-control mb-3" required>
                     <div class="text-start mb-3">
                     </div>
@@ -146,12 +157,12 @@ $conn->close();
 
                 <!-- Register form -->
                 <form id="registerForm" method="POST" action="register_login.php" class="d-none">
-                    <input type="email" name="email" placeholder="Email Address" class="form-control mb-3" required>
-                    <input type="text" name="imie" placeholder="Name" class="form-control mb-3" required>
-                    <input type="text" name="nazwisko" placeholder="Surname" class="form-control mb-3" required>
+                    <input type="email" name="email" placeholder="Email Address" class="form-control mb-3" required value="<?= isset($_POST['email']) ? htmlspecialchars($_POST['email']) : '' ?>">
+                    <input type="text" name="imie" placeholder="Name" class="form-control mb-3" required value="<?= isset($_POST['imie']) ? htmlspecialchars($_POST['imie']) : '' ?>">
+                    <input type="text" name="nazwisko" placeholder="Surname" class="form-control mb-3" required value="<?= isset($_POST['nazwisko']) ? htmlspecialchars($_POST['nazwisko']) : '' ?>">
                     <input type="password" name="password" placeholder="Password" class="form-control mb-3" required>
                     <input type="password" name="repeat_password" placeholder="Repeat Password" class="form-control mb-3" required>
-                    <input type="date" name="data_urodzenia" class="form-control mb-3" required>
+                    <input type="date" name="data_urodzenia" class="form-control mb-3" required value="<?= isset($_POST['data_urodzenia']) ? htmlspecialchars($_POST['data_urodzenia']) : '' ?>">
                     <button type="submit" name="register" class="btn gradient-btn w-100">Register</button>
                 </form>
 
@@ -161,12 +172,11 @@ $conn->close();
 </div>
 
 
-    <!-- 🔹 Wiadomość o błędzie -->
     <?php if (!empty($message)): ?>
         <div class="alert alert-warning text-center mt-4"><?php echo $message; ?></div>
     <?php endif; ?>
 
-<!-- Bootstrap JS -->
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
@@ -185,6 +195,18 @@ $conn->close();
     });
 
 </script>
+
+<script>
+    const formType = "<?= $form_type ?>";
+    window.addEventListener("DOMContentLoaded", () => {
+        if (formType === "register") {
+            document.getElementById("registerToggle").click();
+        } else {
+            document.getElementById("loginToggle").click();
+        }
+    });
+</script>
+
 
 </body>
 </html>
