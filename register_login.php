@@ -21,24 +21,33 @@ if (isset($_POST['register'])) {
     $imie = $_POST['imie'];
     $nazwisko = $_POST['nazwisko'];
     $password = $_POST['password'];
+    $repeat_password = $_POST['repeat_password'];
     $data_urodzenia = $_POST['data_urodzenia'];
 
     $sql_check = "SELECT * FROM users WHERE email = '$email'";
     $result_check = $conn->query($sql_check);
 
-    if ($result_check->num_rows > 0) {
-        $message = "E-mail is already in use.";
-    } else {
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-        $sql = "INSERT INTO users (email, imie, nazwisko, password, data_urodzenia, status, created_at) 
-                VALUES ('$email', '$imie', '$nazwisko', '$hashed_password', '$data_urodzenia', 'user', NOW())";
 
-        if ($conn->query($sql) === TRUE) {
-            $_SESSION['user_id'] = $conn->insert_id;
-            header("Location: $redirect_url");
-            exit();
+if ($password !== $repeat_password) {
+        $message = "Passwords do not match.";
+    } else {
+        $sql_check = "SELECT * FROM users WHERE email = '$email'";
+        $result_check = $conn->query($sql_check);
+
+        if ($result_check->num_rows > 0) {
+            $message = "E-mail is already in use.";
         } else {
-            $message = "Registration error: " . $conn->error;
+            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+            $sql = "INSERT INTO users (email, imie, nazwisko, password, data_urodzenia, status, created_at) 
+                    VALUES ('$email', '$imie', '$nazwisko', '$hashed_password', '$data_urodzenia', 'user', NOW())";
+
+            if ($conn->query($sql) === TRUE) {
+                $_SESSION['user_id'] = $conn->insert_id;
+                header("Location: $redirect_url");
+                exit();
+            } else {
+                $message = "Registration error: " . $conn->error;
+            }
         }
     }
 }
@@ -141,6 +150,7 @@ $conn->close();
                     <input type="text" name="imie" placeholder="Name" class="form-control mb-3" required>
                     <input type="text" name="nazwisko" placeholder="Surname" class="form-control mb-3" required>
                     <input type="password" name="password" placeholder="Password" class="form-control mb-3" required>
+                    <input type="password" name="repeat_password" placeholder="Repeat Password" class="form-control mb-3" required>
                     <input type="date" name="data_urodzenia" class="form-control mb-3" required>
                     <button type="submit" name="register" class="btn gradient-btn w-100">Register</button>
                 </form>
